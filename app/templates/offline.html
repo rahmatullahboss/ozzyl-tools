@@ -1,0 +1,3 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import icon %}
+{% block content %}<section class="empty-page"><div class="empty-page-card"><span class="icon-tile icon-tile-large">{{ icon('globe', 30) }}</span><h1>You are offline</h1><p>Previously opened calculators may still work. Reconnect to load a new page.</p><button class="button button-primary" type="button" data-reload-page>Try again</button></div></section>{% endblock %}

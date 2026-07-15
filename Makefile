@@ -1,29 +1,26 @@
-.PHONY: materialize install dev test lint check migrate upgrade docker
+.PHONY: install dev test lint check migrate upgrade docker
 
-materialize:
-	python bootstrap_source.py --materialize .
-
-install: materialize
+install:
 	python -m pip install -r requirements-dev.txt
 
-dev: materialize
+dev:
 	flask --app run:app run --debug
 
-test: materialize
+test:
 	pytest --cov=app
 	node --test tests/js/*.test.mjs
 
-lint: materialize
+lint:
 	ruff check .
 	ruff format --check .
 
-check: materialize lint test
+check: lint test
 	python -m compileall -q app migrations tests
 
-migrate: materialize
+migrate:
 	flask --app run:app db migrate -m "$(m)"
 
-upgrade: materialize
+upgrade:
 	flask --app run:app db upgrade
 
 docker:
