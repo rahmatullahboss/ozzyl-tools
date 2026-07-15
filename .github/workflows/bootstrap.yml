@@ -6,17 +6,22 @@ on:
     paths:
       - ".bootstrap/**"
       - ".github/workflows/bootstrap.yml"
+  pull_request:
+    types: [reopened]
+    branches: [main]
 
 permissions:
   contents: write
 
 jobs:
   hydrate:
+    if: github.head_ref == 'feat/business-utility-mvp' || github.ref_name == 'feat/business-utility-mvp'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: feat/business-utility-mvp
           fetch-depth: 0
       - name: Verify and hydrate tested source tree
         shell: bash
@@ -32,4 +37,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "feat: hydrate production Ozzyl Tools source"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git push origin HEAD:feat/business-utility-mvp
