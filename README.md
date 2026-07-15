@@ -34,19 +34,31 @@ Invoice, quotation, receipt, and purchase-order generators with:
 - Non-root multi-stage Docker image
 - GitHub Actions for Python, JavaScript, migrations, dependency audit, and Docker build
 
-## Architecture
+## Verified source materialization
+
+The reviewed production source is stored in checksum-verified archive parts under `.bootstrap/`. This repository includes a safe materializer that rejects path traversal, archive links, invalid Base64, and checksum mismatch before extraction.
+
+Materialize the normal source tree once after cloning:
+
+```bash
+python bootstrap_source.py --materialize .
+```
+
+`make install`, `make dev`, `make test`, `make lint`, and `make check` run this step automatically. Docker materializes the source during the image build and removes the archive from the runtime image.
+
+## Architecture after materialization
 
 ```text
 app/
   config.py       environment and database URL normalization
   extensions.py   unbound SQLAlchemy and Migrate extensions
-  models.py       future cloud/account/document domain model
+  models.py       account, workspace, customer, item and document domain model
   catalog.py      calculator and document metadata
   routes.py       public, SEO, PWA, health and readiness routes
   templates/      server-rendered accessible UI
-  static/         design system, browser logic, PWA assets
+  static/         design system, browser logic and PWA assets
 migrations/       reviewed Alembic history
- tests/            route, model, config and JavaScript calculation tests
+tests/            route, model, config and JavaScript calculation tests
 ```
 
 The calculators and document drafts work without a cloud database. When `DATABASE_URL` is empty, development uses `instance/ozzyl_tools.db`. Once a Neon URL is supplied, the same app uses PostgreSQL through Psycopg 3.
@@ -56,10 +68,10 @@ The calculators and document drafts work without a cloud database. When `DATABAS
 ```bash
 python -m venv .venv
 source .venv/bin/activate        # Windows: .venv\Scripts\activate
-pip install -r requirements-dev.txt
+make install
 cp .env.example .env
-flask --app run:app db upgrade
-flask --app run:app run --debug
+make upgrade
+make dev
 ```
 
 Open `http://localhost:5000`.
@@ -71,11 +83,11 @@ Open `http://localhost:5000`.
 3. Run:
 
 ```bash
-flask --app run:app db upgrade
+make upgrade
 flask --app run:app db current
 ```
 
-Both `postgres://...` and `postgresql://...` are normalized to the SQLAlchemy Psycopg 3 dialect.
+Both `postgres://...` and `postgresql://...` are normalized to the SQLAlchemy Psycopg 3 dialect. The initial migration already defines users, workspaces, memberships, customers, reusable items, documents, and document lines.
 
 ## Quality checks
 
@@ -83,7 +95,7 @@ Both `postgres://...` and `postgresql://...` are normalized to the SQLAlchemy Ps
 make check
 ```
 
-Individual commands:
+Individual commands after materialization:
 
 ```bash
 ruff check .
