@@ -1,74 +1,123 @@
 # Ozzyl Tools
 
-A Flask-native, mobile-first business utility and workflow website. The MVP ships with eight calculators plus browser-based invoice and quotation generators.
+A production-oriented, Flask-native business utility and workflow platform. The public experience is English-first, mobile-first, local-first, and designed to expand into multilingual pages and a Neon-backed SaaS.
 
-## Included tools
+## Current product
 
-- Profit margin calculator
-- Markup calculator
-- Discount calculator
-- Sales commission calculator
-- VAT calculator
-- Break-even calculator
-- Loan payment calculator
-- Overtime pay calculator
-- Invoice generator
-- Quotation generator
+### Business calculators
+
+Profit margin, markup, discount, sales commission, VAT, break-even, loan payment, overtime pay, ROI, cash runway, inventory reorder point, compound growth, and unit economics.
+
+### Document workflow
+
+Invoice, quotation, receipt, and purchase-order generators with:
+
+- Live A4 preview
+- Logo upload and custom accent color
+- Multiple currencies
+- Per-line tax, discounts, shipping, and fees
+- Browser autosave
+- JSON backup and restore
+- Copy/share summary
+- Print and browser PDF export
+
+### Product quality
+
+- Flask application factory and blueprints
+- SQLAlchemy 2 typed models
+- Flask-Migrate / Alembic migrations committed to source control
+- Neon/Psycopg 3 URL normalization
+- CSP nonce for scripts, security headers, and secure production cookies
+- Dark mode, accessible focus states, 44px interaction targets, reduced-motion support
+- PWA manifest and offline fallback
+- Sitemap, robots, canonical metadata, Open Graph, and JSON-LD
+- Non-root multi-stage Docker image
+- GitHub Actions for Python, JavaScript, migrations, dependency audit, and Docker build
 
 ## Architecture
 
-- Flask 3 application factory
-- Blueprint-based routing
-- Catalog-driven calculator pages
-- Vanilla JavaScript for instant browser-side calculations
-- Local storage for document drafts
-- SEO metadata, JSON-LD, sitemap, and robots.txt
-- Responsive and print-friendly CSS
-- Pytest route coverage
-- Docker and Render deployment configuration
+```text
+app/
+  config.py       environment and database URL normalization
+  extensions.py   unbound SQLAlchemy and Migrate extensions
+  models.py       future cloud/account/document domain model
+  catalog.py      calculator and document metadata
+  routes.py       public, SEO, PWA, health and readiness routes
+  templates/      server-rendered accessible UI
+  static/         design system, browser logic, PWA assets
+migrations/       reviewed Alembic history
+ tests/            route, model, config and JavaScript calculation tests
+```
 
-The MVP intentionally does not require a database. A `DATABASE_URL` environment variable is reserved for a Neon pooled connection string when accounts, saved history, premium templates, or team workspaces are added.
+The calculators and document drafts work without a cloud database. When `DATABASE_URL` is empty, development uses `instance/ozzyl_tools.db`. Once a Neon URL is supplied, the same app uses PostgreSQL through Psycopg 3.
 
 ## Local setup
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
 pip install -r requirements-dev.txt
 cp .env.example .env
+flask --app run:app db upgrade
 flask --app run:app run --debug
 ```
 
 Open `http://localhost:5000`.
 
-## Tests
+## Add Neon later
+
+1. Copy the **pooled** Neon connection string.
+2. Set it as `DATABASE_URL` without committing `.env`.
+3. Run:
 
 ```bash
-pytest -q
+flask --app run:app db upgrade
+flask --app run:app db current
+```
+
+Both `postgres://...` and `postgresql://...` are normalized to the SQLAlchemy Psycopg 3 dialect.
+
+## Quality checks
+
+```bash
+make check
+```
+
+Individual commands:
+
+```bash
+ruff check .
+ruff format --check .
+pytest --cov=app
+node --test tests/js/*.test.mjs
+flask --app run:app db check
 ```
 
 ## Docker
 
 ```bash
-docker build -t ozzyl-tools .
-docker run --rm -p 8000:8000 --env-file .env ozzyl-tools
+cp .env.example .env
+# Set a secure SECRET_KEY before production use.
+docker compose up --build
 ```
 
-## Production configuration
+Health endpoints:
 
-Set at least:
+- `/health/` — application process
+- `/ready/` — database connectivity
 
+## Deployment
+
+`render.yaml` is included. The same Docker image can run on a VPS, Render, Railway, Fly.io, or another container host. In production configure:
+
+- `FLASK_ENV=production`
 - `SECRET_KEY`
-- `SITE_URL` to the final HTTPS origin
-- `SITE_NAME` if the brand changes
+- `SITE_URL` with the final HTTPS origin
 - `CONTACT_EMAIL`
+- `DATABASE_URL` when cloud persistence is enabled
 
-When Neon is introduced, use its pooled connection string for `DATABASE_URL` and never commit credentials.
+Apply migrations as a release step before routing production traffic.
 
-## Next milestones
+## Planned cloud phase
 
-1. Add analytics and Search Console verification.
-2. Add downloadable branded PDFs and logo upload.
-3. Add multilingual URL structure and translations.
-4. Add Neon-backed accounts, saved customers, items, invoices, and history.
-5. Add premium plans, affiliate placements, and agency lead capture.
+The schema already supports users, workspaces, memberships, customers, reusable items, documents, and document lines. The next cloud phase can add authentication, saved history, team workspaces, premium branding, and subscriptions without redesigning the core schema.

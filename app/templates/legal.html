@@ -1,5 +1,0 @@
-{% extends "base.html" %}
-{% block content %}
-<section class="page-hero compact"><div class="container narrow"><span class="eyebrow">{{ site_name }}</span><h1>{{ heading }}</h1></div></section>
-<section class="section"><div class="container narrow article-copy">{% for paragraph in paragraphs %}<p>{{ paragraph }}</p>{% endfor %}{% if heading == 'Page not found' %}<a class="button button-primary" href="{{ url_for('main.home') }}">Return home</a>{% endif %}</div></section>
-{% endblock %}
