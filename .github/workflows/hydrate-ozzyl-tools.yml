@@ -3,6 +3,8 @@ name: Hydrate Ozzyl Tools source
 on:
   issues:
     types: [opened]
+  pull_request_target:
+    types: [edited]
 
 permissions:
   contents: write
@@ -10,7 +12,9 @@ permissions:
 
 jobs:
   hydrate:
-    if: github.event.issue.title == 'Hydrate Ozzyl Tools production source'
+    if: >-
+      (github.event_name == 'issues' && github.event.issue.title == 'Hydrate Ozzyl Tools production source') ||
+      (github.event_name == 'pull_request_target' && github.event.pull_request.title == 'Hydrate Ozzyl Tools production source')
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -34,6 +38,7 @@ jobs:
           git commit -m "feat: hydrate production Ozzyl Tools source"
           git push origin HEAD:feat/business-utility-mvp
       - name: Close trigger issue
+        if: github.event_name == 'issues'
         env:
           GH_TOKEN: ${{ github.token }}
         run: gh issue close "${{ github.event.issue.number }}" --comment "Production source hydration completed."
