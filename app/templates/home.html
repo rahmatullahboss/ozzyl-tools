@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import icon, tool_card %}
+
+{% block structured_data %}
+{{ super() }}
+<script type="application/ld+json" nonce="{{ g.csp_nonce }}">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Business Calculators and Document Generators",
+  "description": {{ meta_description|tojson }},
+  "url": {{ (site_url + request.path)|tojson }}
+}
+</script>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <span class="pill">No sign-up · Private by default</span>
+      <h1>Business tools that turn numbers into <span>clear decisions.</span></h1>
+      <p>Calculate margins, plan cash, manage inventory, and create professional documents—fast, free, and directly in your browser.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="#calculators">Explore calculators {{ icon('arrow-right', 18) }}</a>
+        <a class="button button-secondary" href="{{ url_for('main.document_generator', document_type='invoice') }}">Create an invoice</a>
+      </div>
+      <div class="trust-row" aria-label="Product benefits">
+        <span>{{ icon('bolt', 17) }} Instant results</span>
+        <span>{{ icon('shield', 17) }} Local-first privacy</span>
+        <span>{{ icon('globe', 17) }} Multi-currency</span>
+      </div>
+    </div>
+    <div class="hero-product" aria-label="Product preview">
+      <div class="preview-window">
+        <div class="preview-toolbar"><span></span><span></span><span></span></div>
+        <div class="preview-body">
+          <div class="preview-heading">
+            <span class="icon-tile">{{ icon('chart-up', 24) }}</span>
+            <div><strong>Profit Margin</strong><small>Live calculation</small></div>
+          </div>
+          <div class="preview-fields">
+            <div><span>Cost price</span><strong>$100.00</strong></div>
+            <div><span>Selling price</span><strong>$150.00</strong></div>
+          </div>
+          <div class="preview-result">
+            <span>Profit margin</span><strong>33.33%</strong>
+            <div class="preview-meter"><span></span></div>
+          </div>
+          <div class="preview-stats">
+            <div><span>Profit</span><strong>$50.00</strong></div>
+            <div><span>Markup</span><strong>50.00%</strong></div>
+          </div>
+        </div>
+      </div>
+      <span class="floating-badge floating-badge-one">{{ icon('check', 16) }} Auto-saved</span>
+      <span class="floating-badge floating-badge-two">{{ icon('lock', 16) }} Stays on device</span>
+    </div>
+  </div>
+</section>
+
+<section class="section section-tight" aria-labelledby="quick-start-title">
+  <div class="container">
+    <div class="quick-search-card">
+      <div>
+        <span class="eyebrow">Find a tool</span>
+        <h2 id="quick-start-title">What do you need to calculate?</h2>
+      </div>
+      <label class="search-field">
+        <span class="sr-only">Search business tools</span>
+        {{ icon('search', 20) }}
+        <input type="search" placeholder="Search margin, VAT, invoice…" autocomplete="off" data-tool-search>
+        <kbd>/</kbd>
+      </label>
+      <div class="search-results" data-search-results hidden></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="calculators" aria-labelledby="calculators-title">
+  <div class="container">
+    <div class="section-heading split-heading">
+      <div>
+        <span class="eyebrow">Business calculators</span>
+        <h2 id="calculators-title">Useful every week, not just once.</h2>
+        <p>Each tool gives instant results, clear formulas, and shareable inputs.</p>
+      </div>
+      <div class="category-filter" role="group" aria-label="Filter calculators">
+        <button type="button" class="filter-chip is-active" data-category-filter="all" aria-pressed="true">All</button>
+        {% for category in categories %}
+        <button type="button" class="filter-chip" data-category-filter="{{ category|lower }}" aria-pressed="false">{{ category }}</button>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="favorites-section" data-favorites-section hidden>
+      <div class="mini-heading"><h3>Your favorites</h3><span>Saved on this device</span></div>
+      <div class="tool-grid tool-grid-small" data-favorites-grid></div>
+    </div>
+
+    <div class="tool-grid" data-tool-grid>
+      {% for tool in all_tools %}{{ tool_card(tool) }}{% endfor %}
+    </div>
+    <p class="empty-state" data-tool-empty hidden>No matching tools. Try a broader search.</p>
+  </div>
+</section>
+
+<section class="section section-surface" id="documents" aria-labelledby="documents-title">
+  <div class="container">
+    <div class="section-heading centered-heading">
+      <span class="eyebrow">Document workflow</span>
+      <h2 id="documents-title">Create polished business documents in minutes.</h2>
+      <p>Add your logo, customize currency and tax, autosave drafts, and print or export to PDF.</p>
+    </div>
+    <div class="document-grid">
+      {% for kind, document in document_types.items() %}
+      <article class="document-card">
+        <span class="document-icon">{{ icon(document.icon, 25) }}</span>
+        <div><h3>{{ document.noun }}</h3><p>{{ document.summary }}</p></div>
+        <a class="button button-secondary button-full" href="{{ url_for('main.document_generator', document_type=kind) }}">Create {{ document.noun|lower }} {{ icon('arrow-right', 17) }}</a>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" id="why-us" aria-labelledby="why-us-title">
+  <div class="container">
+    <div class="section-heading centered-heading">
+      <span class="eyebrow">Designed for real work</span>
+      <h2 id="why-us-title">Fast enough for daily use. Clear enough to trust.</h2>
+    </div>
+    <div class="benefit-grid">
+      <article><span>{{ icon('bolt', 24) }}</span><h3>Instant and lightweight</h3><p>No heavy dashboard or account wall. Open a tool and start working.</p></article>
+      <article><span>{{ icon('shield', 24) }}</span><h3>Local-first privacy</h3><p>Inputs and document drafts stay in your browser unless you later choose cloud sync.</p></article>
+      <article><span>{{ icon('globe', 24) }}</span><h3>Ready to expand globally</h3><p>Multi-currency today, multilingual routes and localized rules next.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="section section-cta">
+  <div class="container cta-card">
+    <div><span class="eyebrow">Start with a useful result</span><h2>Calculate your margin, then create the quotation.</h2><p>Move from planning to a customer-ready document without switching tools.</p></div>
+    <div class="cta-actions"><a class="button button-primary" href="{{ url_for('main.calculator', slug='profit-margin-calculator') }}">Calculate margin</a><a class="button button-secondary" href="{{ url_for('main.document_generator', document_type='quotation') }}">Create quotation</a></div>
+  </div>
+</section>
+{% endblock %}

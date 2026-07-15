@@ -19,7 +19,7 @@ jobs:
     env:
       FLASK_ENV: testing
       SECRET_KEY: ci-only-secret
-      DATABASE_URL: sqlite:///instance/ci.db
+      DATABASE_URL: sqlite:////tmp/ozzyl-ci.db
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

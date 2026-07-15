@@ -1,0 +1,2 @@
+{% extends 'base.html' %}
+{% block content %}<section class="page-hero page-hero-compact"><div class="container narrow-container"><span class="eyebrow">Legal</span><h1>{{ heading }}</h1><p>Last updated July 15, 2026</p></div></section><section class="section"><article class="container narrow-container legal-prose">{% for title, body in sections %}<section><h2>{{ title }}</h2><p>{{ body }}</p></section>{% endfor %}<section><h2>Contact</h2><p>Questions can be sent to <a href="mailto:{{ contact_email }}">{{ contact_email }}</a>.</p></section></article></section>{% endblock %}

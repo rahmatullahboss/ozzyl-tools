@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import icon %}
+
+{% block structured_data %}<script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {"@context":"https://schema.org","@type":"WebApplication","name":document.name,"applicationCategory":"BusinessApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":document.summary,"url":site_url+request.path}|tojson }}</script>{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero-compact"><div class="container"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ url_for('main.home') }}">Home</a><span>/</span><a href="{{ url_for('main.home') }}#documents">Documents</a><span>/</span><span aria-current="page">{{ document.noun }}</span></nav><div class="tool-title-row"><span class="icon-tile icon-tile-large">{{ icon(document.icon, 28) }}</span><div><span class="eyebrow">Free document generator</span><h1>{{ document.name }}</h1><p>{{ document.summary }}</p></div></div></div></section>
+
+<section class="document-workspace" data-document-app data-document-type="{{ document_type }}" data-prefix="{{ document.prefix }}">
+  <div class="container document-toolbar">
+    <div class="view-switcher" role="tablist" aria-label="Document view"><button type="button" role="tab" aria-selected="true" data-document-view="edit">Edit</button><button type="button" role="tab" aria-selected="false" data-document-view="preview">Preview</button></div>
+    <div class="toolbar-actions">
+      <button class="button button-ghost" type="button" data-new-document>{{ icon('reset', 17) }} New</button>
+      <button class="button button-secondary" type="button" data-export-json>{{ icon('download', 17) }} Backup</button>
+      <label class="button button-secondary file-button">{{ icon('upload', 17) }} Restore<input type="file" accept="application/json" data-import-json></label>
+      <button class="button button-primary" type="button" data-print-document>{{ icon('printer', 17) }} Print / PDF</button>
+    </div>
+  </div>
+
+  <div class="container document-layout" data-active-view="edit">
+    <form class="document-editor" data-document-form novalidate>
+      <section class="editor-section"><div class="editor-section-title"><div><span class="step-number">1</span><div><h2>Business details</h2><p>Shown at the top of the {{ document.noun|lower }}.</p></div></div><span class="autosave-status" data-autosave-status>{{ icon('check', 15) }} Saved locally</span></div>
+        <div class="editor-grid two-cols">
+          <div class="logo-upload"><label for="logo-input">Business logo</label><div class="logo-dropzone"><img data-logo-preview alt="Business logo preview" hidden><div data-logo-placeholder>{{ icon('upload', 24) }}<span>Upload logo</span><small>PNG, JPG, SVG · Max 1 MB</small></div><input id="logo-input" type="file" accept="image/png,image/jpeg,image/svg+xml" data-logo-input></div><button type="button" class="text-button" data-remove-logo hidden>Remove logo</button></div>
+          <div class="stack-fields"><div class="field-group"><label for="business-name">Business name <span aria-hidden="true">*</span></label><input id="business-name" name="businessName" autocomplete="organization" required placeholder="Ozzyl IT Services"></div><div class="field-group"><label for="business-details">Address and contact details</label><textarea id="business-details" name="businessDetails" rows="4" placeholder="Street address&#10;City, Country&#10;email@example.com · +1 234 567 890"></textarea></div><div class="field-group"><label for="business-tax-id">Tax / registration ID</label><input id="business-tax-id" name="businessTaxId" placeholder="Optional"></div></div>
+        </div>
+      </section>
+
+      <section class="editor-section"><div class="editor-section-title"><div><span class="step-number">2</span><div><h2>{{ 'Supplier' if document_type == 'purchase-order' else 'Customer' }} and document</h2><p>Add recipient, dates, currency, and document number.</p></div></div></div>
+        <div class="editor-grid two-cols"><div class="stack-fields"><div class="field-group"><label for="client-name">{{ 'Supplier' if document_type == 'purchase-order' else 'Customer' }} name <span aria-hidden="true">*</span></label><input id="client-name" name="clientName" required autocomplete="organization" placeholder="Client or company"></div><div class="field-group"><label for="client-details">Address and contact details</label><textarea id="client-details" name="clientDetails" rows="4" placeholder="Billing address&#10;email@example.com"></textarea></div></div>
+          <div class="editor-grid two-cols compact-grid"><div class="field-group"><label for="document-number">{{ document.noun }} number</label><input id="document-number" name="documentNumber" value="{{ document.prefix }}-001"></div><div class="field-group"><label for="currency-select">Currency</label><select id="currency-select" name="currency"><option value="USD">USD — $</option><option value="EUR">EUR — €</option><option value="GBP">GBP — £</option><option value="BDT">BDT — ৳</option><option value="INR">INR — ₹</option><option value="JPY">JPY — ¥</option><option value="CAD">CAD — C$</option><option value="AUD">AUD — A$</option></select></div><div class="field-group"><label for="issue-date">Issue date</label><input id="issue-date" name="issueDate" type="date"></div><div class="field-group"><label for="due-date">{{ 'Delivery date' if document_type == 'purchase-order' else ('Paid date' if document_type == 'receipt' else 'Due / valid until') }}</label><input id="due-date" name="dueDate" type="date"></div></div>
+        </div>
+      </section>
+
+      <section class="editor-section"><div class="editor-section-title"><div><span class="step-number">3</span><div><h2>Items and pricing</h2><p>Add products or services. Totals update automatically.</p></div></div><button class="button button-secondary" type="button" data-add-line>{{ icon('plus', 17) }} Add item</button></div>
+        <div class="line-items-editor" data-line-items></div>
+        <div class="totals-editor"><div class="field-group inline-field"><label for="discount-value">Discount</label><div><input id="discount-value" name="discountValue" type="number" min="0" step="0.01" value="0"><select name="discountType" aria-label="Discount type"><option value="percent">%</option><option value="fixed">Fixed</option></select></div></div><div class="field-group inline-field"><label for="shipping-value">Shipping / fees</label><input id="shipping-value" name="shippingValue" type="number" min="0" step="0.01" value="0"></div></div>
+      </section>
+
+      <section class="editor-section"><div class="editor-section-title"><div><span class="step-number">4</span><div><h2>Notes and appearance</h2><p>Finish with terms, payment details, and brand styling.</p></div></div></div>
+        <div class="editor-grid two-cols"><div class="stack-fields"><div class="field-group"><label for="notes">Notes</label><textarea id="notes" name="notes" rows="4" placeholder="Thank you for your business."></textarea></div><div class="field-group"><label for="terms">Terms / payment instructions</label><textarea id="terms" name="terms" rows="4" placeholder="Payment due within 14 days. Bank details…"></textarea></div></div><div class="appearance-panel"><div class="field-group"><label for="accent-color">Accent color</label><div class="color-control"><input id="accent-color" name="accentColor" type="color" value="#2563eb"><input type="text" data-color-text value="#2563eb" aria-label="Accent color hex value" pattern="^#[0-9A-Fa-f]{6}$"></div></div><div class="field-group"><label for="document-label">Custom heading</label><input id="document-label" name="documentLabel" value="{{ document.noun }}"></div><label class="check-field"><input type="checkbox" name="showTaxColumn" checked><span>Show tax column on document</span></label></div></div>
+      </section>
+    </form>
+
+    <aside class="document-preview-panel" data-document-preview-panel>
+      <div class="preview-sticky">
+        <div class="preview-topbar"><span>Live preview</span><div><button class="icon-button" type="button" data-copy-summary aria-label="Copy document summary">{{ icon('copy', 18) }}</button><button class="icon-button" type="button" data-share-document aria-label="Share document">{{ icon('share', 18) }}</button></div></div>
+        <article class="paper" data-paper>
+          <header class="paper-header"><div class="paper-brand"><img data-paper-logo alt="" hidden><div><strong data-paper-business-name>Your business</strong><p data-paper-business-details>Business address and contact details</p><small data-paper-business-tax-id></small></div></div><div class="paper-title"><h2 data-paper-label>{{ document.noun }}</h2><span data-paper-number>{{ document.prefix }}-001</span></div></header>
+          <div class="paper-meta"><div><span>{{ 'Supplier' if document_type == 'purchase-order' else 'Bill to' }}</span><strong data-paper-client-name>Customer name</strong><p data-paper-client-details>Customer address and contact details</p></div><dl><div><dt>Issue date</dt><dd data-paper-issue-date>—</dd></div><div><dt>{{ 'Delivery date' if document_type == 'purchase-order' else ('Paid date' if document_type == 'receipt' else 'Due date') }}</dt><dd data-paper-due-date>—</dd></div></dl></div>
+          <div class="paper-table-wrap"><table class="paper-table"><thead><tr><th>Description</th><th>Qty</th><th>Rate</th><th data-tax-header>Tax</th><th>Amount</th></tr></thead><tbody data-paper-lines></tbody></table></div>
+          <div class="paper-totals"><div class="paper-notes"><div data-paper-notes-wrap><span>Notes</span><p data-paper-notes>Thank you for your business.</p></div><div data-paper-terms-wrap><span>Terms</span><p data-paper-terms>Payment terms will appear here.</p></div></div><dl><div><dt>Subtotal</dt><dd data-paper-subtotal>—</dd></div><div data-paper-discount-row><dt>Discount</dt><dd data-paper-discount>—</dd></div><div><dt>Tax</dt><dd data-paper-tax>—</dd></div><div data-paper-shipping-row><dt>Shipping / fees</dt><dd data-paper-shipping>—</dd></div><div class="grand-total"><dt>Total</dt><dd data-paper-total>—</dd></div></dl></div>
+          <footer class="paper-footer"><span>Generated with {{ site_name }}</span><span data-paper-footer-number>{{ document.prefix }}-001</span></footer>
+        </article>
+        <p class="preview-privacy">{{ icon('lock', 15) }} Draft automatically saved in this browser.</p>
+      </div>
+    </aside>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}<script type="module" src="{{ url_for('static', filename='js/document.js') }}"></script>{% endblock %}
