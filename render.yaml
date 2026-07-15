@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: ozzyl-tools
+    runtime: docker
+    healthCheckPath: /health/
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: SITE_NAME
+        value: Ozzyl Tools
+      - key: SITE_URL
+        sync: false

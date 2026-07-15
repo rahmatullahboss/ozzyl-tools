@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <span class="eyebrow">Free business utilities</span>
+      <h1>Run the numbers.<br><span>Move your business forward.</span></h1>
+      <p class="hero-copy">Fast calculators and workflow tools for pricing, sales, finance, payroll, invoices, and quotations. No account required.</p>
+      <div class="hero-actions">
+        <a class="button button-primary" href="#tools">Explore tools</a>
+        <a class="button button-secondary" href="{{ url_for('main.invoice_generator') }}">Create an invoice</a>
+      </div>
+      <div class="trust-row" aria-label="Product benefits">
+        <span>✓ Browser-based</span><span>✓ Mobile friendly</span><span>✓ Instant results</span>
+      </div>
+    </div>
+    <div class="hero-card" aria-label="Example profit calculation">
+      <div class="mini-label">Profit snapshot</div>
+      <div class="hero-metric"><span>Revenue</span><strong>$12,500</strong></div>
+      <div class="hero-metric"><span>Cost</span><strong>$8,000</strong></div>
+      <div class="hero-metric highlight"><span>Gross profit</span><strong>$4,500</strong></div>
+      <div class="progress"><span style="width:36%"></span></div>
+      <div class="mini-note">36% profit margin</div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="tools">
+  <div class="container">
+    <div class="section-heading">
+      <div><span class="eyebrow">Calculator library</span><h2>Useful tools, ready when work happens</h2></div>
+      <p>Each calculator works instantly in your browser and includes a clear explanation of the result.</p>
+    </div>
+    <div class="tool-grid">
+      {% for tool in all_tools %}
+      <a class="tool-card" href="{{ url_for('main.calculator', slug=tool.slug) }}">
+        <div class="tool-icon">{{ tool.icon }}</div>
+        <span class="tool-category">{{ tool.category }}</span>
+        <h3>{{ tool.short_name }}</h3>
+        <p>{{ tool.summary }}</p>
+        <span class="card-link">Open calculator <span aria-hidden="true">→</span></span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section section-soft">
+  <div class="container workflow-grid">
+    <div>
+      <span class="eyebrow">Documents</span>
+      <h2>Turn calculations into business-ready documents</h2>
+      <p>Create an invoice or quotation, add line items and tax, save the draft in your browser, then print or export it as PDF.</p>
+    </div>
+    <div class="document-cards">
+      <a class="document-card" href="{{ url_for('main.invoice_generator') }}"><span>INV</span><div><strong>Invoice Generator</strong><small>Create a payment-ready invoice</small></div><b>→</b></a>
+      <a class="document-card" href="{{ url_for('main.quotation_generator') }}"><span>QUO</span><div><strong>Quotation Generator</strong><small>Send a professional price quote</small></div><b>→</b></a>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container feature-grid">
+    <article><div class="feature-number">01</div><h3>Private by default</h3><p>Calculator values stay in your browser. Document drafts use local storage until cloud accounts are introduced.</p></article>
+    <article><div class="feature-number">02</div><h3>Built for repeat use</h3><p>Simple inputs, clear outputs, and layouts that work from a phone during real business conversations.</p></article>
+    <article><div class="feature-number">03</div><h3>Ready to grow</h3><p>The Flask application factory and catalog-based structure make new tools and languages easy to add.</p></article>
+  </div>
+</section>
+{% endblock %}
