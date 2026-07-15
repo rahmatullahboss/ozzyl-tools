@@ -1,0 +1,35 @@
+name: Hydrate production source
+
+on:
+  push:
+    branches: [feat/business-utility-mvp]
+    paths:
+      - ".bootstrap/**"
+      - ".github/workflows/bootstrap.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  hydrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify and hydrate tested source tree
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/ozzyl-source
+          cat .bootstrap/part-* | base64 --decode > /tmp/ozzyl-source.tar.gz
+          echo "ad5b084cdd1238e3f06052af34fc5727936872e82416b12b4525c2f21eb6edda  /tmp/ozzyl-source.tar.gz" | sha256sum --check
+          tar -xzf /tmp/ozzyl-source.tar.gz -C /tmp/ozzyl-source
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -a /tmp/ozzyl-source/. .
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: hydrate production Ozzyl Tools source"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
