@@ -1,0 +1,207 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import icon %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/utility-tools.css') }}">
+{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": tool.name,
+  "url": site_url + request.path,
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+  "description": tool.summary
+}|tojson }}</script>
+{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero-compact">
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="{{ url_for('main.home') }}">Home</a><span aria-hidden="true">/</span><a href="{{ url_for('main.home') }}#utilities">Utilities</a><span aria-hidden="true">/</span><span aria-current="page">{{ tool.short_name }}</span>
+    </nav>
+    <div class="tool-title-row">
+      <span class="icon-tile icon-tile-large">{{ icon(tool.icon, 28) }}</span>
+      <div><span class="eyebrow">{{ tool.category }} utility</span><h1>{{ tool.name }}</h1><p>{{ tool.summary }}</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section utility-section">
+  <div class="container" data-utility-kind="{{ tool.kind }}">
+    {% if tool.kind == 'word_counter' %}
+    <div class="utility-layout utility-layout-wide">
+      <section class="utility-card">
+        <div class="card-heading">
+          <div><span class="eyebrow">Your text</span><h2>Write or paste text</h2></div>
+          <div class="inline-actions">
+            <button type="button" class="text-button" data-copy-text>{{ icon('copy', 16) }} Copy</button>
+            <button type="button" class="text-button" data-clear-text>{{ icon('trash', 16) }} Clear</button>
+          </div>
+        </div>
+        <label class="field-group utility-textarea">
+          <span class="sr-only">Text to analyze</span>
+          <textarea rows="16" placeholder="Start typing or paste your text here…" data-word-input></textarea>
+        </label>
+        <p class="privacy-note">{{ icon('lock', 15) }} Text analysis happens only in this browser.</p>
+      </section>
+      <aside class="result-card utility-result-card" aria-labelledby="word-stats-heading">
+        <div class="card-heading"><div><span class="eyebrow">Live analysis</span><h2 id="word-stats-heading">Text statistics</h2></div></div>
+        <div class="stat-grid">
+          <div><span>Words</span><strong data-text-stat="words">0</strong></div>
+          <div><span>Characters</span><strong data-text-stat="characters">0</strong></div>
+          <div><span>Without spaces</span><strong data-text-stat="charactersNoSpaces">0</strong></div>
+          <div><span>Sentences</span><strong data-text-stat="sentences">0</strong></div>
+          <div><span>Paragraphs</span><strong data-text-stat="paragraphs">0</strong></div>
+          <div><span>Reading time</span><strong data-text-stat="readingMinutes">0 min</strong></div>
+          <div><span>Speaking time</span><strong data-text-stat="speakingMinutes">0 min</strong></div>
+        </div>
+      </aside>
+    </div>
+
+    {% elif tool.kind == 'case_converter' %}
+    <div class="utility-layout">
+      <section class="utility-card">
+        <div class="card-heading">
+          <div><span class="eyebrow">Input</span><h2>Enter your text</h2></div>
+          <button type="button" class="text-button" data-clear-case>{{ icon('trash', 16) }} Clear</button>
+        </div>
+        <label class="field-group utility-textarea">
+          <span class="sr-only">Text to convert</span>
+          <textarea rows="11" placeholder="Paste text with any capitalization…" data-case-input></textarea>
+        </label>
+        <div class="case-actions" role="group" aria-label="Text case options">
+          <button type="button" class="button button-secondary" data-case-mode="upper">UPPERCASE</button>
+          <button type="button" class="button button-secondary" data-case-mode="lower">lowercase</button>
+          <button type="button" class="button button-secondary" data-case-mode="title">Title Case</button>
+          <button type="button" class="button button-secondary" data-case-mode="sentence">Sentence case</button>
+        </div>
+      </section>
+      <aside class="result-card utility-result-card">
+        <div class="card-heading">
+          <div><span class="eyebrow">Converted text</span><h2>Your result</h2></div>
+          <button type="button" class="button button-secondary" data-copy-case>{{ icon('copy', 17) }} Copy</button>
+        </div>
+        <label class="field-group utility-textarea">
+          <span class="sr-only">Converted text result</span>
+          <textarea rows="13" readonly placeholder="Choose a conversion style…" data-case-output></textarea>
+        </label>
+        <p class="privacy-note">{{ icon('lock', 15) }} Your text never leaves this device.</p>
+      </aside>
+    </div>
+
+    {% elif tool.kind == 'percentage' %}
+    <div class="utility-layout">
+      <form class="utility-card" novalidate>
+        <div class="card-heading">
+          <div><span class="eyebrow">Calculation</span><h2>Choose a percentage question</h2></div>
+          <button type="button" class="text-button" data-reset-percentage>{{ icon('reset', 16) }} Reset</button>
+        </div>
+        <div class="field-group">
+          <label for="percentage-mode">Calculation type</label>
+          <select id="percentage-mode" data-percentage-mode>
+            <option value="of">What is A% of B?</option>
+            <option value="what">A is what percent of B?</option>
+            <option value="change">Percentage change from A to B</option>
+          </select>
+        </div>
+        <div class="form-grid utility-number-grid">
+          <div class="field-group">
+            <label for="percentage-first" data-first-label>Percentage</label>
+            <input id="percentage-first" type="number" inputmode="decimal" step="any" value="20" data-percentage-first>
+          </div>
+          <div class="field-group">
+            <label for="percentage-second" data-second-label>Number</label>
+            <input id="percentage-second" type="number" inputmode="decimal" step="any" value="150" data-percentage-second>
+          </div>
+        </div>
+        <div class="formula-note">{{ icon('info', 17) }} <span>Results update instantly as you type.</span></div>
+      </form>
+      <aside class="result-card utility-result-card percentage-result-card" aria-live="polite">
+        <div class="card-heading"><div><span class="eyebrow">Result</span><h2>Your percentage</h2></div></div>
+        <div class="primary-result percentage-result">
+          <span>Calculated result</span>
+          <strong data-percentage-result>30</strong>
+        </div>
+        <p class="result-explanation" data-percentage-explanation>20% of 150 is 30.</p>
+      </aside>
+    </div>
+
+    {% elif tool.kind == 'password' %}
+    <div class="utility-layout">
+      <section class="utility-card">
+        <div class="card-heading"><div><span class="eyebrow">Password options</span><h2>Customize your password</h2></div></div>
+        <div class="field-group">
+          <label for="password-length">Length: <strong data-password-length-value>16</strong></label>
+          <input id="password-length" class="range-input" type="range" min="8" max="64" value="16" data-password-length>
+        </div>
+        <div class="option-grid">
+          <label><input type="checkbox" value="lowercase" checked data-password-option> Lowercase letters</label>
+          <label><input type="checkbox" value="uppercase" checked data-password-option> Uppercase letters</label>
+          <label><input type="checkbox" value="numbers" checked data-password-option> Numbers</label>
+          <label><input type="checkbox" value="symbols" checked data-password-option> Symbols</label>
+          <label><input type="checkbox" value="excludeAmbiguous" data-password-option> Exclude ambiguous characters</label>
+        </div>
+        <button type="button" class="button button-primary button-full" data-generate-password>{{ icon('sparkles', 18) }} Generate another</button>
+      </section>
+      <aside class="result-card utility-result-card password-result-card">
+        <div class="card-heading"><div><span class="eyebrow">Generated password</span><h2>Secure result</h2></div></div>
+        <div class="password-output-row">
+          <input type="text" readonly aria-label="Generated password" data-password-output>
+          <button type="button" class="button button-secondary" data-copy-password>{{ icon('copy', 17) }} Copy</button>
+        </div>
+        <div class="strength-row">
+          <div class="strength-track"><span data-password-strength-bar data-score="0"></span></div>
+          <strong data-password-strength>Weak</strong>
+        </div>
+        <p class="privacy-note">{{ icon('lock', 15) }} Generated with your browser's cryptographic random generator.</p>
+      </aside>
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="section section-surface">
+  <div class="container content-grid">
+    <article class="prose-card">
+      <span class="eyebrow">How to use it</span>
+      {% if tool.kind == 'word_counter' %}
+      <h2>Measure text without uploading it</h2><p>Paste any article, email, assignment, or social post to see live writing statistics. Reading time uses an estimate of 200 words per minute, while speaking time uses 130 words per minute.</p>
+      {% elif tool.kind == 'case_converter' %}
+      <h2>Fix capitalization instantly</h2><p>Paste your text, choose a case style, then copy the converted result. Sentence case keeps punctuation while correcting capitalization after sentence endings.</p>
+      {% elif tool.kind == 'percentage' %}
+      <h2>Solve common percentage questions</h2><p>Use the first mode for a percentage of a number, the second for ratios expressed as percentages, and the third to measure increase or decrease from an original value.</p>
+      {% elif tool.kind == 'password' %}
+      <h2>Create stronger unique passwords</h2><p>Choose a longer length and multiple character types. Store generated passwords in a trusted password manager instead of reusing them across websites.</p>
+      {% endif %}
+    </article>
+    <aside class="prose-card callout-card">
+      <span>{{ icon('shield', 22) }}</span>
+      <h2>Private by design</h2>
+      <p>This utility runs locally in your browser. The text, values, and generated password are not sent to Ozzyl Tools.</p>
+      <a class="button button-primary button-full" href="#main-content">Use this tool</a>
+    </aside>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-heading"><span class="eyebrow">More utilities</span><h2>Continue with another tool</h2></div>
+    <div class="tool-grid tool-grid-small">
+      {% for related in related_tools %}
+      <article class="tool-card tool-card-compact">
+        <div class="tool-card-head"><span class="icon-tile">{{ icon(related.icon, 22) }}</span></div>
+        <div><span class="eyebrow">{{ related.category }}</span><h3><a href="{{ url_for(related.endpoint) }}">{{ related.short_name }}</a></h3></div>
+        <a class="card-link" href="{{ url_for(related.endpoint) }}">Open utility <span aria-hidden="true">→</span></a>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}<script type="module" src="{{ url_for('static', filename='js/utility-tools.js') }}"></script>{% endblock %}
