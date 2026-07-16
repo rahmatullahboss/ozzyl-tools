@@ -20,6 +20,7 @@
   <link rel="icon" href="{{ url_for('static', filename='img/app-icon.svg') }}" type="image/svg+xml">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/polish.css') }}">
   <script nonce="{{ g.csp_nonce }}">(function(){var t=localStorage.getItem('ozzyl-theme')||'auto';document.documentElement.dataset.theme=t;if(t==='dark'||(t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}})();</script>
   {% block structured_data %}
   <script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {

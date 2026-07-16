@@ -1,0 +1,13 @@
+[Unit]
+Description=Ozzyl Tools verified GitHub deployment watcher
+After=network-online.target docker.service
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+UMask=0077
+Nice=10
+ExecStart=/usr/local/lib/ozzyl-tools/deploy-watch.sh

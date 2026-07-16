@@ -1,0 +1,13 @@
+[Unit]
+Description=Check GitHub for a verified Ozzyl Tools release
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=3min
+RandomizedDelaySec=20s
+AccuracySec=10s
+Persistent=true
+Unit=ozzyl-tools-deploy-watch.service
+
+[Install]
+WantedBy=timers.target
