@@ -54,6 +54,11 @@ def test_seo_endpoints(client):
     assert sitemap.status_code == 200
     assert sitemap.mimetype == "application/xml"
     assert b"profit-margin-calculator" in sitemap.data
+    assert b"word-unscrambler" in sitemap.data
+    assert b"word-counter" in sitemap.data
+    assert b"case-converter" in sitemap.data
+    assert b"percentage-calculator" in sitemap.data
+    assert b"password-generator" in sitemap.data
     robots = client.get("/robots.txt")
     assert robots.status_code == 200
     assert b"Sitemap:" in robots.data
