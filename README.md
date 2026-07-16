@@ -108,15 +108,27 @@ Health endpoints:
 
 ## Deployment
 
-`render.yaml` is included. The same Docker image can run on a VPS, Render, Railway, Fly.io, or another container host. In production configure:
+GitHub Actions runs linting, Python and JavaScript tests, migration checks, dependency auditing, and a production Docker build. A commit on `main` is marked deploy-ready only after both test and Docker jobs pass.
 
-- `FLASK_ENV=production`
-- `SECRET_KEY`
-- `SITE_URL` with the final HTTPS origin
-- `CONTACT_EMAIL`
-- `DATABASE_URL` when cloud persistence is enabled
+The production VPS uses a pull-based watcher instead of storing an SSH private key in GitHub. Every three minutes it checks the latest successful `main` workflow, confirms the verified SHA still matches `origin/main`, and deploys that exact commit with migration, local/public health checks, and code rollback.
 
-Apply migrations as a release step before routing production traffic.
+Production paths:
+
+- Repository: `/opt/ozzyl-tools`
+- Environment file: `/etc/ozzyl-tools/app.env`
+- Persistent Docker volume: `ozzyl-tools-instance`
+- Public origin: `https://tools.online-bazar.top`
+- Watcher: `/usr/local/lib/ozzyl-tools/deploy-watch.sh`
+
+The systemd files are committed in `ops/`. Install them with:
+
+```bash
+sudo cp ops/ozzyl-tools-deploy-watch.* /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now ozzyl-tools-deploy-watch.timer
+```
+
+The same Docker image can still run on Render, Railway, Fly.io, or another container host. Configure `FLASK_ENV`, `SECRET_KEY`, `SITE_URL`, `CONTACT_EMAIL`, and `DATABASE_URL` as required.
 
 ## Planned cloud phase
 
