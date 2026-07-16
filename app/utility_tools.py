@@ -10,7 +10,10 @@ UTILITY_TOOLS = [
         "endpoint": "utility_tools.word_counter",
         "name": "Word Counter",
         "short_name": "Word Counter",
-        "summary": "Count words, characters, sentences, paragraphs, and estimated reading time instantly.",
+        "summary": (
+            "Count words, characters, sentences, paragraphs, and estimated reading time "
+            "instantly."
+        ),
         "category": "Writing",
         "icon": "file-text",
         "kind": "word_counter",
@@ -20,7 +23,9 @@ UTILITY_TOOLS = [
         "endpoint": "utility_tools.case_converter",
         "name": "Case Converter",
         "short_name": "Case Converter",
-        "summary": "Convert text to uppercase, lowercase, title case, or sentence case in one click.",
+        "summary": (
+            "Convert text to uppercase, lowercase, title case, or sentence case in one click."
+        ),
         "category": "Writing",
         "icon": "letters",
         "kind": "case_converter",
@@ -57,7 +62,9 @@ def inject_utility_tools() -> dict:
 
 def _render_utility(slug: str):
     tool = UTILITY_TOOLS_BY_SLUG[slug]
-    related_tools = [candidate for candidate in UTILITY_TOOLS if candidate["slug"] != slug][:3]
+    related_tools = [
+        candidate for candidate in UTILITY_TOOLS if candidate["slug"] != slug
+    ][:3]
     return render_template(
         "utility-tool.html",
         tool=tool,
