@@ -11,8 +11,7 @@ UTILITY_TOOLS = [
         "name": "Word Counter",
         "short_name": "Word Counter",
         "summary": (
-            "Count words, characters, sentences, paragraphs, and estimated reading time "
-            "instantly."
+            "Count words, characters, sentences, paragraphs, and estimated reading time instantly."
         ),
         "category": "Writing",
         "icon": "file-text",
