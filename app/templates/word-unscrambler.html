@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import icon, tool_card %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/word-unscrambler.css') }}">
+{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": tool.name,
+  "url": site_url + request.path,
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+  "description": tool.summary
+}|tojson }}</script>
+{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero-compact">
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="{{ url_for('main.home') }}">Home</a><span aria-hidden="true">/</span><a href="{{ url_for('main.home') }}#calculators">Tools</a><span aria-hidden="true">/</span><span aria-current="page">Word Unscrambler</span>
+    </nav>
+    <div class="tool-title-row">
+      <span class="icon-tile icon-tile-large">{{ icon(tool.icon, 28) }}</span>
+      <div><span class="eyebrow">Writing utility</span><h1>{{ tool.name }}</h1><p>{{ tool.summary }}</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section unscrambler-section">
+  <div class="container unscrambler-layout" data-word-unscrambler data-tool-slug="{{ tool.slug }}">
+    <form class="calculator-card unscrambler-card" data-unscrambler-form novalidate>
+      <div class="card-heading">
+        <div><span class="eyebrow">Your letters</span><h2>Build possible words</h2></div>
+        <button type="button" class="text-button" data-reset-unscrambler>{{ icon('reset', 16) }} Reset</button>
+      </div>
+
+      <div class="field-group word-entry-group">
+        <label for="letters">Enter 2–15 English letters</label>
+        <div class="word-entry">
+          <input id="letters" name="letters" type="text" inputmode="text" maxlength="15" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Try: listen" aria-describedby="letters-help letters-error" required data-letters>
+          <span class="letter-count" data-letter-count>0/15</span>
+        </div>
+        <small id="letters-help" class="field-help">Spaces and punctuation are removed automatically.</small>
+        <small id="letters-error" class="field-error" role="alert" data-letters-error></small>
+      </div>
+
+      <div class="form-grid unscrambler-options">
+        <div class="field-group">
+          <label for="match-mode">Match type</label>
+          <select id="match-mode" data-match-mode>
+            <option value="all">All words from the letters</option>
+            <option value="exact">Exact anagrams only</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label for="minimum-length">Minimum word length</label>
+          <select id="minimum-length" data-minimum-length>
+            <option value="2">2 letters</option>
+            <option value="3" selected>3 letters</option>
+            <option value="4">4 letters</option>
+            <option value="5">5 letters</option>
+            <option value="6">6 letters</option>
+            <option value="7">7 letters</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="button button-primary button-full" type="submit" data-find-words>{{ icon('search', 18) }} Find words</button>
+
+      <div class="example-row" aria-label="Example letter sets">
+        <span>Try an example:</span>
+        <button type="button" class="filter-chip" data-example="listen">listen</button>
+        <button type="button" class="filter-chip" data-example="earth">earth</button>
+        <button type="button" class="filter-chip" data-example="below">below</button>
+      </div>
+
+      <p class="privacy-note">{{ icon('lock', 15) }} Your letters stay in this browser. Only the public dictionary file is downloaded.</p>
+    </form>
+
+    <aside class="result-card unscrambler-results" aria-labelledby="word-results-heading">
+      <div class="card-heading">
+        <div><span class="eyebrow">Possible words</span><h2 id="word-results-heading">Results</h2></div>
+        <span class="dictionary-status" data-dictionary-status><span></span> Loading dictionary</span>
+      </div>
+
+      <div class="word-result-summary" data-word-summary aria-live="polite">
+        Enter letters to find matching words.
+      </div>
+
+      <div class="word-result-toolbar" data-result-toolbar hidden>
+        <span data-visible-count></span>
+        <button type="button" class="button button-secondary" data-copy-words>{{ icon('copy', 17) }} Copy words</button>
+      </div>
+
+      <div class="word-grid" data-word-results aria-live="polite"></div>
+      <div class="word-empty" data-word-empty>
+        <span class="icon-tile">{{ icon('letters', 24) }}</span>
+        <h3>Ready when you are</h3>
+        <p>Type a group of letters and choose whether every letter must be used.</p>
+      </div>
+
+      <p class="dictionary-note">Results use a common-English word list, so specialist names and rare dictionary words may not appear.</p>
+    </aside>
+  </div>
+</section>
+
+<section class="section section-surface">
+  <div class="container content-grid">
+    <article class="prose-card">
+      <span class="eyebrow">How it works</span>
+      <h2>Unscramble letters in seconds</h2>
+      <p>The tool compares your letters with a common-English dictionary directly in your browser. Repeated letters are handled correctly.</p>
+      <h3>Useful tips</h3>
+      <ol><li>Choose exact anagrams when every entered letter must be used.</li><li>Choose all words to discover shorter words hidden inside the letters.</li><li>Increase the minimum length to focus on stronger answers.</li><li>Click any result to copy that single word.</li></ol>
+    </article>
+    <aside class="prose-card callout-card">
+      <span>{{ icon('sparkles', 22) }}</span>
+      <h2>Great for quick word practice</h2>
+      <p>Use it for vocabulary exercises, word games, brainstorming, or checking possible anagrams.</p>
+      <a class="button button-primary button-full" href="#letters">Start unscrambling</a>
+    </aside>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container"><div class="section-heading"><span class="eyebrow">Keep working</span><h2>Related business tools</h2></div><div class="tool-grid tool-grid-small">{% for related in related_tools %}{{ tool_card(related, compact=true) }}{% endfor %}</div></div>
+</section>
+{% endblock %}
+
+{% block scripts %}<script type="module" src="{{ url_for('static', filename='js/word-unscrambler.js') }}"></script>{% endblock %}

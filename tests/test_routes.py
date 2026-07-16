@@ -25,6 +25,14 @@ def test_each_calculator_route_renders(client, tool):
     assert b"data-calculator=" in response.data
 
 
+def test_word_unscrambler_renders(client):
+    response = client.get("/tools/word-unscrambler/")
+    assert response.status_code == 200
+    assert b"data-word-unscrambler" in response.data
+    assert b"word-unscrambler.js" in response.data
+    assert "https://raw.githubusercontent.com" in response.headers["Content-Security-Policy"]
+
+
 @pytest.mark.parametrize("document_type", DOCUMENT_TYPES)
 def test_each_document_generator_renders(client, document_type):
     response = client.get(f"/documents/{document_type}-generator/")
