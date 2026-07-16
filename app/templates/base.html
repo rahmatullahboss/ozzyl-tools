@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/components.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/polish.css') }}">
+  {% block styles %}{% endblock %}
   <script nonce="{{ g.csp_nonce }}">(function(){var t=localStorage.getItem('ozzyl-theme')||'auto';document.documentElement.dataset.theme=t;if(t==='dark'||(t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}})();</script>
   {% block structured_data %}
   <script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {
@@ -42,6 +43,7 @@
       </a>
       <nav class="desktop-nav" aria-label="Primary navigation">
         <a href="{{ url_for('main.home') }}#calculators">Calculators</a>
+        <a href="{{ url_for('word_tools.word_unscrambler') }}">Word Unscrambler</a>
         <a href="{{ url_for('main.home') }}#documents">Documents</a>
         <a href="{{ url_for('main.home') }}#why-us">Why Ozzyl Tools</a>
       </nav>
@@ -59,6 +61,7 @@
     <div class="mobile-menu" id="mobile-menu" data-mobile-menu hidden>
       <nav class="container" aria-label="Mobile navigation">
         <a href="{{ url_for('main.home') }}#calculators">Calculators</a>
+        <a href="{{ url_for('word_tools.word_unscrambler') }}">Word Unscrambler</a>
         <a href="{{ url_for('main.home') }}#documents">Document generators</a>
         <a href="{{ url_for('main.privacy') }}">Privacy</a>
         <a href="{{ url_for('main.terms') }}">Terms</a>
@@ -82,6 +85,7 @@
         <h2>Popular tools</h2>
         <a href="{{ url_for('main.calculator', slug='profit-margin-calculator') }}">Profit margin</a>
         <a href="{{ url_for('main.calculator', slug='break-even-calculator') }}">Break-even</a>
+        <a href="{{ url_for('word_tools.word_unscrambler') }}">Word unscrambler</a>
         <a href="{{ url_for('main.document_generator', document_type='invoice') }}">Invoice generator</a>
       </div>
       <div>
