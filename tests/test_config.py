@@ -1,6 +1,6 @@
 import pytest
 
-from app.config import ProductionConfig, normalize_database_url
+from app.config import ProductionConfig, normalize_database_url, resolve_site_url
 
 
 def test_neon_url_normalization():
@@ -14,6 +14,18 @@ def test_neon_url_normalization():
         normalize_database_url("postgresql+psycopg://user:pass@host/db")
         == "postgresql+psycopg://user:pass@host/db"
     )
+
+
+def test_site_url_prefers_explicit_value(monkeypatch):
+    monkeypatch.setenv("SITE_URL", "https://tools.example.com/")
+    monkeypatch.setenv("RENDER_EXTERNAL_URL", "https://ozzyl-tools.onrender.com")
+    assert resolve_site_url() == "https://tools.example.com"
+
+
+def test_site_url_uses_render_fallback(monkeypatch):
+    monkeypatch.delenv("SITE_URL", raising=False)
+    monkeypatch.setenv("RENDER_EXTERNAL_URL", "https://ozzyl-tools.onrender.com/")
+    assert resolve_site_url() == "https://ozzyl-tools.onrender.com"
 
 
 def test_production_requires_secret_key(monkeypatch):

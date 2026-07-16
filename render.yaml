@@ -2,15 +2,15 @@ services:
   - type: web
     name: ozzyl-tools
     runtime: docker
+    plan: free
+    region: singapore
+    branch: main
+    autoDeployTrigger: checksPass
     healthCheckPath: /health/
     envVars:
       - key: FLASK_ENV
         value: production
       - key: SECRET_KEY
         generateValue: true
-      - key: SITE_URL
-        sync: false
       - key: CONTACT_EMAIL
-        sync: false
-      - key: DATABASE_URL
         sync: false

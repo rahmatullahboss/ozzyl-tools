@@ -17,10 +17,17 @@ def normalize_database_url(value: str | None) -> str:
     return value
 
 
+def resolve_site_url() -> str:
+    """Use an explicit origin, then Render's generated URL, then localhost."""
+    return (
+        os.getenv("SITE_URL") or os.getenv("RENDER_EXTERNAL_URL") or "http://localhost:5000"
+    ).rstrip("/")
+
+
 class BaseConfig:
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-only-change-me")
     SITE_NAME = os.getenv("SITE_NAME", "Ozzyl Tools")
-    SITE_URL = os.getenv("SITE_URL", "http://localhost:5000").rstrip("/")
+    SITE_URL = resolve_site_url()
     CONTACT_EMAIL = os.getenv("CONTACT_EMAIL", "hello@example.com")
     DEFAULT_LOCALE = os.getenv("DEFAULT_LOCALE", "en")
     SUPPORTED_LOCALES = tuple(
