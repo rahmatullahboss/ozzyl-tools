@@ -43,7 +43,7 @@
       </a>
       <nav class="desktop-nav" aria-label="Primary navigation">
         <a href="{{ url_for('main.home') }}#calculators">Calculators</a>
-        <a href="{{ url_for('word_tools.word_unscrambler') }}">Word Unscrambler</a>
+        <a href="{{ url_for('main.home') }}#utilities">Utilities</a>
         <a href="{{ url_for('main.home') }}#documents">Documents</a>
         <a href="{{ url_for('main.home') }}#why-us">Why Ozzyl Tools</a>
       </nav>
@@ -61,7 +61,7 @@
     <div class="mobile-menu" id="mobile-menu" data-mobile-menu hidden>
       <nav class="container" aria-label="Mobile navigation">
         <a href="{{ url_for('main.home') }}#calculators">Calculators</a>
-        <a href="{{ url_for('word_tools.word_unscrambler') }}">Word Unscrambler</a>
+        <a href="{{ url_for('main.home') }}#utilities">Utilities</a>
         <a href="{{ url_for('main.home') }}#documents">Document generators</a>
         <a href="{{ url_for('main.privacy') }}">Privacy</a>
         <a href="{{ url_for('main.terms') }}">Terms</a>
@@ -84,7 +84,8 @@
       <div>
         <h2>Popular tools</h2>
         <a href="{{ url_for('main.calculator', slug='profit-margin-calculator') }}">Profit margin</a>
-        <a href="{{ url_for('main.calculator', slug='break-even-calculator') }}">Break-even</a>
+        <a href="{{ url_for('utility_tools.word_counter') }}">Word counter</a>
+        <a href="{{ url_for('utility_tools.percentage_calculator') }}">Percentage calculator</a>
         <a href="{{ url_for('word_tools.word_unscrambler') }}">Word unscrambler</a>
         <a href="{{ url_for('main.document_generator', document_type='invoice') }}">Invoice generator</a>
       </div>
