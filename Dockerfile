@@ -1,10 +1,10 @@
-FROM python:3.12-slim AS builder
+FROM python:3.13-slim AS builder
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1 PIP_NO_CACHE_DIR=1
 WORKDIR /build
 COPY requirements.txt .
 RUN python -m venv /opt/venv && /opt/venv/bin/pip install --upgrade pip && /opt/venv/bin/pip install -r requirements.txt
 
-FROM python:3.12-slim AS runtime
+FROM python:3.13-slim AS runtime
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PATH="/opt/venv/bin:$PATH" FLASK_ENV=production PORT=8000
 RUN groupadd --system app && useradd --system --gid app --create-home app
 WORKDIR /app

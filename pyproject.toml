@@ -2,7 +2,7 @@
 name = "ozzyl-tools"
 version = "0.2.0"
 description = "Flask-native business calculators and document workflow tools."
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -10,7 +10,7 @@ pythonpath = ["."]
 addopts = "-q --strict-markers --disable-warnings"
 
 [tool.ruff]
-target-version = "py312"
+target-version = "py313"
 line-length = 100
 extend-exclude = [".venv", "migrations/versions"]
 
