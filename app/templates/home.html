@@ -7,7 +7,7 @@
 {
   "@context": "https://schema.org",
   "@type": "CollectionPage",
-  "name": "Business Calculators and Document Generators",
+  "name": "Business Calculators, Utilities, and Document Generators",
   "description": {{ meta_description|tojson }},
   "url": {{ (site_url + request.path)|tojson }}
 }
@@ -20,10 +20,10 @@
     <div class="hero-copy">
       <span class="pill">No sign-up · Private by default</span>
       <h1>Business tools that turn numbers into <span>clear decisions.</span></h1>
-      <p>Calculate margins, plan cash, manage inventory, and create professional documents—fast, free, and directly in your browser.</p>
+      <p>Calculate margins, work with text, generate secure passwords, and create professional documents—fast, free, and directly in your browser.</p>
       <div class="hero-actions">
         <a class="button button-primary" href="#calculators">Explore calculators {{ icon('arrow-right', 18) }}</a>
-        <a class="button button-secondary" href="{{ url_for('main.document_generator', document_type='invoice') }}">Create an invoice</a>
+        <a class="button button-secondary" href="#utilities">Browse utilities</a>
       </div>
       <div class="trust-row" aria-label="Product benefits">
         <span>{{ icon('bolt', 17) }} Instant results</span>
@@ -63,13 +63,13 @@
   <div class="container">
     <div class="quick-search-card">
       <div>
-        <span class="eyebrow">Find a tool</span>
+        <span class="eyebrow">Find a calculator</span>
         <h2 id="quick-start-title">What do you need to calculate?</h2>
       </div>
       <label class="search-field">
-        <span class="sr-only">Search business tools</span>
+        <span class="sr-only">Search business calculators</span>
         {{ icon('search', 20) }}
-        <input type="search" placeholder="Search margin, VAT, invoice…" autocomplete="off" data-tool-search>
+        <input type="search" placeholder="Search margin, VAT, loan…" autocomplete="off" data-tool-search>
         <kbd>/</kbd>
       </label>
       <div class="search-results" data-search-results hidden></div>
@@ -105,7 +105,31 @@
   </div>
 </section>
 
-<section class="section section-surface" id="documents" aria-labelledby="documents-title">
+<section class="section section-surface" id="utilities" aria-labelledby="utilities-title">
+  <div class="container">
+    <div class="section-heading centered-heading">
+      <span class="eyebrow">Everyday utilities</span>
+      <h2 id="utilities-title">Quick tools for writing, math, and security.</h2>
+      <p>Everything runs directly in your browser, with no account and no unnecessary uploads.</p>
+    </div>
+    <div class="tool-grid">
+      <article class="tool-card">
+        <div class="tool-card-head"><span class="icon-tile">{{ icon('letters', 22) }}</span></div>
+        <div><span class="eyebrow">Writing</span><h3><a href="{{ url_for('word_tools.word_unscrambler') }}">Word Unscrambler</a></h3><p>Find exact anagrams and shorter English words from a set of letters.</p></div>
+        <a class="card-link" href="{{ url_for('word_tools.word_unscrambler') }}">Open utility <span aria-hidden="true">→</span></a>
+      </article>
+      {% for tool in utility_tools %}
+      <article class="tool-card">
+        <div class="tool-card-head"><span class="icon-tile">{{ icon(tool.icon, 22) }}</span></div>
+        <div><span class="eyebrow">{{ tool.category }}</span><h3><a href="{{ url_for(tool.endpoint) }}">{{ tool.short_name }}</a></h3><p>{{ tool.summary }}</p></div>
+        <a class="card-link" href="{{ url_for(tool.endpoint) }}">Open utility <span aria-hidden="true">→</span></a>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section" id="documents" aria-labelledby="documents-title">
   <div class="container">
     <div class="section-heading centered-heading">
       <span class="eyebrow">Document workflow</span>
