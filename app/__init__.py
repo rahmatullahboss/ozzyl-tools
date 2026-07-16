@@ -32,9 +32,11 @@ def create_app(config_name: str | None = None, test_config: dict | None = None) 
     # Import models after the extension is initialized so Alembic sees metadata.
     from . import models  # noqa: F401
     from .routes import bp
+    from .utility_tools import bp as utility_tools_bp
     from .word_tools import bp as word_tools_bp
 
     app.register_blueprint(word_tools_bp)
+    app.register_blueprint(utility_tools_bp)
     app.register_blueprint(bp)
     register_request_hooks(app)
     register_error_handlers(app)
