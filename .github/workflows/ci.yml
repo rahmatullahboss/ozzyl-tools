@@ -37,6 +37,7 @@ jobs:
       - run: pytest --cov=app --cov-report=term-missing
       - run: node --check app/static/js/app.js && node --check app/static/js/calculator.js && node --check app/static/js/document.js
       - run: node --test tests/js/*.test.mjs
+      - run: bash -n scripts/deploy-vps.sh
       - run: flask --app run:app db upgrade && flask --app run:app db check
       - run: pip-audit -r requirements.txt
 
@@ -53,3 +54,74 @@ jobs:
           tags: ozzyl-tools:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy:
+    needs: [test, docker]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: true
+    env:
+      VPS_HOST: ${{ secrets.VPS_HOST }}
+      VPS_USER: ${{ secrets.VPS_USER }}
+      VPS_PORT: ${{ secrets.VPS_PORT }}
+      VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+      VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+      VPS_APP_DIR: ${{ secrets.VPS_APP_DIR }}
+      PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate deployment secrets
+        run: |
+          test -n "$VPS_HOST"
+          test -n "$VPS_USER"
+          test -n "$VPS_PORT"
+          test -n "$VPS_SSH_KEY"
+          test -n "$VPS_KNOWN_HOSTS"
+          test -n "$VPS_APP_DIR"
+          test -n "$PRODUCTION_URL"
+
+      - name: Configure SSH
+        run: |
+          install -m 700 -d "$HOME/.ssh"
+          printf '%s\n' "$VPS_SSH_KEY" > "$HOME/.ssh/deploy_key"
+          chmod 600 "$HOME/.ssh/deploy_key"
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/known_hosts"
+
+      - name: Upload deployment script
+        run: |
+          scp \
+            -i "$HOME/.ssh/deploy_key" \
+            -P "$VPS_PORT" \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            scripts/deploy-vps.sh \
+            "$VPS_USER@$VPS_HOST:/tmp/ozzyl-tools-deploy.sh"
+
+      - name: Deploy tested commit to VPS
+        env:
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          ssh \
+            -i "$HOME/.ssh/deploy_key" \
+            -p "$VPS_PORT" \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            "$VPS_USER@$VPS_HOST" \
+            "cd '$VPS_APP_DIR' && DEPLOY_PUBLIC_HEALTH_URL='${PRODUCTION_URL%/}/health/' bash /tmp/ozzyl-tools-deploy.sh \"$GITHUB_SHA\""
+
+      - name: Verify public production health
+        run: |
+          curl \
+            --fail \
+            --show-error \
+            --silent \
+            --retry 10 \
+            --retry-delay 3 \
+            --retry-all-errors \
+            "${PRODUCTION_URL%/}/health/"

@@ -24,7 +24,8 @@ def test_workflow_uses_pinned_known_hosts_and_exact_github_sha():
 
     assert "VPS_KNOWN_HOSTS" in workflow
     assert "StrictHostKeyChecking=yes" in workflow
-    assert '"$GITHUB_SHA"' in workflow
+    assert "GITHUB_SHA: ${{ github.sha }}" in workflow
+    assert "bash /tmp/ozzyl-tools-deploy.sh" in workflow
     assert "PRODUCTION_URL" in workflow
     assert "/health/" in workflow
 
