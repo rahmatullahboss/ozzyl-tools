@@ -65,13 +65,13 @@ jobs:
       group: production-deploy
       cancel-in-progress: true
     env:
-      VPS_HOST: ${{ secrets.VPS_HOST }}
-      VPS_USER: ${{ secrets.VPS_USER }}
-      VPS_PORT: ${{ secrets.VPS_PORT }}
+      VPS_HOST: ${{ vars.VPS_HOST }}
+      VPS_USER: ${{ vars.VPS_USER }}
+      VPS_PORT: ${{ vars.VPS_PORT }}
       VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
       VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
-      VPS_APP_DIR: ${{ secrets.VPS_APP_DIR }}
-      PRODUCTION_URL: ${{ secrets.PRODUCTION_URL }}
+      VPS_APP_DIR: ${{ vars.VPS_APP_DIR }}
+      PRODUCTION_URL: ${{ vars.PRODUCTION_URL }}
     steps:
       - uses: actions/checkout@v4
 
