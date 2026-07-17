@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import icon %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pdf-tools.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pdf-markup.css') }}">
+{% endblock %}
+
+{% block structured_data %}
+{{ super() }}
+<script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": tool.name,
+  "description": tool.summary,
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "url": site_url + request.path,
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}
+}|tojson }}</script>
+{% endblock %}
+
+{% block content %}
+<section class="pdf-hero pdf-markup-hero">
+  <div class="container pdf-hero-inner">
+    <div>
+      <a class="back-link" href="{{ url_for('main.home') }}#pdf-tools">{{ icon('arrow-left', 17) }} All PDF tools</a>
+      <span class="pill">Private · Browser-based · No upload</span>
+      <h1>{{ tool.name }}</h1>
+      <p>{{ tool.summary }} PDF contents remain on this device throughout the process.</p>
+    </div>
+    <span class="pdf-hero-icon">{{ icon(tool.icon, 34) }}</span>
+  </div>
+</section>
+
+<section class="section pdf-workspace-section">
+  <div class="container pdf-layout" data-pdf-markup="{{ tool.kind }}">
+    <article class="pdf-workspace">
+      <div class="pdf-workspace-heading">
+        <div><span class="eyebrow">PDF markup</span><h2>{{ tool.name }}</h2></div>
+        <span class="local-badge">{{ icon('lock', 16) }} Local processing</span>
+      </div>
+
+      {% if tool.kind == 'sign' %}
+      <form data-markup-form="sign">
+        <label class="pdf-dropzone" data-dropzone>{{ icon('upload', 28) }}<strong>Select one PDF</strong><span>Choose a document, prepare a signature, and set its page position.</span><input type="file" accept="application/pdf,.pdf" required data-pdf-file></label>
+        <div class="pdf-field-grid">
+          <label class="field-group"><span>Signature method</span><select data-signature-mode><option value="typed">Type a signature</option><option value="drawn">Draw a signature</option><option value="upload">Upload signature image</option></select></label>
+          <label class="field-group"><span>Page number</span><input type="number" min="1" step="1" value="1" data-page-number></label>
+        </div>
+        <div class="signature-panel" data-signature-panel="typed"><label class="field-group"><span>Signer name</span><input type="text" maxlength="120" placeholder="Type the name to sign" data-signer-name></label></div>
+        <div class="signature-panel" data-signature-panel="drawn" hidden><div class="signature-canvas-wrap"><canvas width="900" height="240" data-signature-canvas aria-label="Draw signature"></canvas><button type="button" class="text-button" data-clear-signature>{{ icon('reset', 16) }} Clear drawing</button></div></div>
+        <div class="signature-panel" data-signature-panel="upload" hidden><label class="field-group"><span>Signature PNG or JPEG</span><input type="file" accept="image/png,image/jpeg" data-signature-file></label></div>
+        <fieldset class="pdf-lab-fieldset"><legend>Signature position</legend><div class="pdf-lab-four-grid">
+          <label class="field-group"><span>From left</span><div class="number-field"><input type="number" min="0" max="90" step="1" value="10" data-x-percent><span class="field-affix">%</span></div></label>
+          <label class="field-group"><span>From top</span><div class="number-field"><input type="number" min="0" max="90" step="1" value="70" data-y-percent><span class="field-affix">%</span></div></label>
+          <label class="field-group"><span>Signature width</span><div class="number-field"><input type="number" min="5" max="80" step="1" value="25" data-signature-width><span class="field-affix">%</span></div></label>
+        </div></fieldset>
+        <button class="button button-primary button-full" type="submit" data-process-button>{{ icon('clipboard', 18) }} Sign and download PDF</button>
+      </form>
+
+      {% elif tool.kind == 'text' %}
+      <form data-markup-form="text">
+        <label class="pdf-dropzone" data-dropzone>{{ icon('upload', 28) }}<strong>Select one PDF</strong><span>Add a note, correction, reference, or label to one page.</span><input type="file" accept="application/pdf,.pdf" required data-pdf-file></label>
+        <label class="field-group"><span>Text to add</span><textarea rows="4" maxlength="1000" placeholder="Enter the text that should appear on the PDF" data-text-value></textarea></label>
+        <div class="pdf-lab-four-grid">
+          <label class="field-group"><span>Page number</span><input type="number" min="1" step="1" value="1" data-page-number></label>
+          <label class="field-group"><span>From left</span><div class="number-field"><input type="number" min="0" max="95" step="1" value="10" data-x-percent><span class="field-affix">%</span></div></label>
+          <label class="field-group"><span>From top</span><div class="number-field"><input type="number" min="0" max="95" step="1" value="10" data-y-percent><span class="field-affix">%</span></div></label>
+          <label class="field-group"><span>Font size</span><input type="number" min="6" max="96" step="1" value="14" data-font-size></label>
+          <label class="field-group"><span>Text color</span><input type="color" value="#111827" data-text-color></label>
+        </div>
+        <button class="button button-primary button-full" type="submit" data-process-button>{{ icon('file-text', 18) }} Add text and download</button>
+      </form>
+
+      {% elif tool.kind == 'stamp' %}
+      <form data-markup-form="stamp">
+        <label class="pdf-dropzone" data-dropzone>{{ icon('upload', 28) }}<strong>Select one PDF</strong><span>Apply a review, approval, confidentiality, or payment stamp.</span><input type="file" accept="application/pdf,.pdf" required data-pdf-file></label>
+        <div class="pdf-field-grid">
+          <label class="field-group"><span>Stamp</span><select data-stamp-preset><option value="DRAFT">DRAFT</option><option value="APPROVED">APPROVED</option><option value="CONFIDENTIAL">CONFIDENTIAL</option><option value="PAID">PAID</option><option value="REVIEWED">REVIEWED</option><option value="custom">Custom text</option></select></label>
+          <label class="field-group" hidden><span>Custom stamp</span><input type="text" maxlength="80" data-custom-stamp></label>
+          <label class="field-group"><span>Pages</span><input type="text" inputmode="numeric" placeholder="Leave blank for all pages" data-pages><small>Example: 1-3, 5</small></label>
+          <label class="field-group"><span>Position</span><select data-stamp-position><option value="center">Center</option><option value="top-left">Top left</option><option value="top-right">Top right</option><option value="bottom-left">Bottom left</option><option value="bottom-right">Bottom right</option></select></label>
+          <label class="field-group"><span>Font size</span><input type="number" min="12" max="120" step="1" value="42" data-stamp-size></label>
+          <label class="field-group"><span>Opacity</span><input type="number" min="0.05" max="1" step="0.05" value="0.35" data-stamp-opacity></label>
+          <label class="field-group"><span>Rotation</span><select data-stamp-rotation><option value="0">0°</option><option value="-45">−45°</option><option value="45">45°</option><option value="90">90°</option></select></label>
+          <label class="field-group"><span>Color</span><input type="color" value="#c92a2a" data-stamp-color></label>
+        </div>
+        <button class="button button-primary button-full" type="submit" data-process-button>{{ icon('check', 18) }} Stamp and download PDF</button>
+      </form>
+
+      {% elif tool.kind == 'compare' %}
+      <form data-markup-form="compare">
+        <div class="pdf-compare-inputs">
+          <label class="pdf-dropzone">{{ icon('upload', 28) }}<strong>Original PDF</strong><span>Select the earlier document version.</span><input type="file" accept="application/pdf,.pdf" required data-original-file></label>
+          <label class="pdf-dropzone">{{ icon('upload', 28) }}<strong>Revised PDF</strong><span>Select the updated document version.</span><input type="file" accept="application/pdf,.pdf" required data-revised-file></label>
+        </div>
+        <div class="formula-note">{{ icon('info', 17) }} <span>This tool compares selectable text. Scanned documents need OCR first, visual formatting changes may not appear, and comparison is limited to 800 extracted lines per document.</span></div>
+        <button class="button button-primary button-full" type="submit" data-process-button>{{ icon('layers', 18) }} Compare PDF text</button>
+      </form>
+      <div class="pdf-comparison-summary" data-comparison-summary hidden><div><span>Added lines</span><strong data-added-count>0</strong></div><div><span>Removed lines</span><strong data-removed-count>0</strong></div><div><span>Unchanged lines</span><strong data-unchanged-count>0</strong></div></div>
+      <div class="pdf-diff-output" data-diff-output aria-live="polite"></div>
+      <div class="result-actions" data-diff-actions hidden><button type="button" class="button button-secondary" data-copy-diff>{{ icon('copy', 17) }} Copy comparison</button><button type="button" class="button button-secondary" data-download-diff>{{ icon('download', 17) }} Download TXT</button></div>
+      {% endif %}
+
+      <div class="pdf-status" role="status" aria-live="polite" data-markup-status hidden></div>
+    </article>
+
+    <aside class="pdf-sidebar">
+      {% if tool.kind != 'compare' %}<div class="pdf-info-card pdf-file-inspection" data-file-inspection hidden><span class="icon-tile">{{ icon('file-text', 22) }}</span><h2>Selected document</h2><dl><div><dt>File</dt><dd data-file-name>—</dd></div><div><dt>Size</dt><dd data-file-size>—</dd></div><div><dt>Pages</dt><dd data-page-count>—</dd></div></dl></div>{% endif %}
+      <div class="pdf-info-card"><span class="icon-tile">{{ icon('shield', 22) }}</span><h2>Your PDFs stay private</h2><p>The documents are read and modified in browser memory. Ozzyl Tools does not receive or store their contents.</p></div>
+      <div class="pdf-info-card"><h2>Important limits</h2><p>Use files under 50 MB. Password-protected or damaged PDFs may need to be unlocked first. A placed signature is an electronic mark, not a certificate-based digital signature.</p></div>
+    </aside>
+  </div>
+</section>
+
+<section class="section section-surface"><div class="container"><div class="section-heading centered-heading"><span class="eyebrow">More PDF markup tools</span><h2>Continue reviewing the document.</h2></div><div class="tool-grid">{% for related in related_tools %}<article class="tool-card"><div class="tool-card-head"><span class="icon-tile">{{ icon(related.icon, 22) }}</span></div><div><span class="eyebrow">PDF markup</span><h3><a href="{{ url_for(related.endpoint) }}">{{ related.short_name }}</a></h3><p>{{ related.summary }}</p></div><a class="card-link" href="{{ url_for(related.endpoint) }}">Open PDF tool <span aria-hidden="true">→</span></a></article>{% endfor %}</div></div></section>
+{% endblock %}
+
+{% block scripts %}<script type="module" src="{{ url_for('static', filename='js/pdf-markup.js') }}"></script>{% endblock %}

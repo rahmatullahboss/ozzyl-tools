@@ -1,0 +1,4 @@
+.growth-hero .icon-tile-large{background:linear-gradient(135deg,var(--primary-soft),var(--surface));}
+.growth-error{margin-top:1rem;}
+[data-growth-chart] svg{display:block;width:100%;height:auto;min-height:220px;}
+@media print{.growth-hero .advanced-private-badge,.advanced-actions,.advanced-stress-card,.text-button{display:none!important;}}
