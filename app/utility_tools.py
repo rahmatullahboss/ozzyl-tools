@@ -64,9 +64,7 @@ def inject_utility_tools() -> dict:
 
 def _render_utility(slug: str):
     tool = UTILITY_TOOLS_BY_SLUG[slug]
-    related_tools = [
-        candidate for candidate in CORE_UTILITY_TOOLS if candidate["slug"] != slug
-    ][:3]
+    related_tools = [candidate for candidate in CORE_UTILITY_TOOLS if candidate["slug"] != slug][:3]
     return render_template(
         "utility-tool.html",
         tool=tool,
