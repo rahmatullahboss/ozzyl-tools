@@ -6,9 +6,7 @@ from app.advanced_tools import ADVANCED_CALCULATOR_TOOLS
 from app.pdf_lab import PDF_LAB_TOOLS
 
 
-@pytest.mark.parametrize(
-    "tool", ADVANCED_CALCULATOR_TOOLS, ids=lambda tool: tool["slug"]
-)
+@pytest.mark.parametrize("tool", ADVANCED_CALCULATOR_TOOLS, ids=lambda tool: tool["slug"])
 def test_each_advanced_calculator_renders(client, tool):
     response = client.get(f"/tools/{tool['slug']}/")
 

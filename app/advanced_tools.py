@@ -244,9 +244,7 @@ ADVANCED_CALCULATOR_TOOLS = [
     },
 ]
 
-ADVANCED_CALCULATOR_TOOLS_BY_SLUG = {
-    tool["slug"]: tool for tool in ADVANCED_CALCULATOR_TOOLS
-}
+ADVANCED_CALCULATOR_TOOLS_BY_SLUG = {tool["slug"]: tool for tool in ADVANCED_CALCULATOR_TOOLS}
 
 
 @bp.app_context_processor
@@ -256,11 +254,7 @@ def inject_advanced_calculator_tools() -> dict:
 
 def _render(slug: str):
     tool = ADVANCED_CALCULATOR_TOOLS_BY_SLUG[slug]
-    related = [
-        candidate
-        for candidate in ADVANCED_CALCULATOR_TOOLS
-        if candidate["slug"] != slug
-    ]
+    related = [candidate for candidate in ADVANCED_CALCULATOR_TOOLS if candidate["slug"] != slug]
     return render_template(
         "advanced-calculator.html",
         tool=tool,

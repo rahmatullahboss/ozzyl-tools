@@ -156,12 +156,8 @@ def terms():
 @bp.get("/sitemap.xml")
 def sitemap():
     urls = [url_for("main.home", _external=True)]
-    urls.extend(
-        url_for("main.calculator", slug=tool["slug"], _external=True) for tool in TOOLS
-    )
-    urls.extend(
-        url_for(tool["endpoint"], _external=True) for tool in ADVANCED_CALCULATOR_TOOLS
-    )
+    urls.extend(url_for("main.calculator", slug=tool["slug"], _external=True) for tool in TOOLS)
+    urls.extend(url_for(tool["endpoint"], _external=True) for tool in ADVANCED_CALCULATOR_TOOLS)
     urls.extend(url_for(tool["endpoint"], _external=True) for tool in UTILITY_TOOLS)
     urls.extend(url_for(tool["endpoint"], _external=True) for tool in PDF_TOOLS)
     urls.extend(url_for(tool["endpoint"], _external=True) for tool in PDF_LAB_TOOLS)
@@ -182,9 +178,7 @@ def sitemap():
 
 @bp.get("/robots.txt")
 def robots():
-    body = (
-        f"User-agent: *\nAllow: /\nSitemap: {url_for('main.sitemap', _external=True)}\n"
-    )
+    body = f"User-agent: *\nAllow: /\nSitemap: {url_for('main.sitemap', _external=True)}\n"
     return Response(body, mimetype="text/plain")
 
 
