@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import html
+
 import pytest
 
 from app.utility_tools import CORE_UTILITY_TOOLS, UTILITY_TOOLS
@@ -20,4 +22,5 @@ def test_home_lists_all_utilities(client):
 
     assert response.status_code == 200
     for tool in UTILITY_TOOLS:
-        assert tool["short_name"].encode() in response.data
+        expected_name = html.escape(tool["short_name"]).encode()
+        assert expected_name in response.data
