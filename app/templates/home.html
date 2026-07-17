@@ -63,7 +63,7 @@
   <div class="container">
     <div class="quick-search-card">
       <div><span class="eyebrow">Find a calculator</span><h2 id="quick-start-title">What do you need to calculate?</h2></div>
-      <label class="search-field"><span class="sr-only">Search business calculators</span>{{ icon('search', 20) }}<input type="search" placeholder="Search DTI, mortgage, margin, savings…" autocomplete="off" data-tool-search><kbd>/</kbd></label>
+      <label class="search-field"><span class="sr-only">Search business calculators</span>{{ icon('search', 20) }}<input type="search" placeholder="Search ROI, ROAS, DTI, margin, savings…" autocomplete="off" data-tool-search><kbd>/</kbd></label>
       <div class="search-results" data-search-results hidden></div>
     </div>
   </div>
@@ -86,6 +86,9 @@
       {% for tool in finance_tools %}
       <article class="tool-card" data-tool-card data-name="{{ tool.name|lower }}" data-category="{{ tool.category|lower }}"><div class="tool-card-head"><span class="icon-tile">{{ icon(tool.icon, 22) }}</span><span class="pill">Finance</span></div><div><span class="eyebrow">{{ tool.category }}</span><h3><a href="{{ url_for(tool.endpoint) }}">{{ tool.short_name }}</a></h3><p>{{ tool.summary }}</p></div><a class="card-link" href="{{ url_for(tool.endpoint) }}">Open finance calculator <span aria-hidden="true">→</span></a></article>
       {% endfor %}
+      {% for tool in growth_tools %}
+      <article class="tool-card" data-tool-card data-name="{{ tool.name|lower }}" data-category="{{ tool.category|lower }}"><div class="tool-card-head"><span class="icon-tile">{{ icon(tool.icon, 22) }}</span><span class="pill">Growth</span></div><div><span class="eyebrow">{{ tool.category }}</span><h3><a href="{{ url_for(tool.endpoint) }}">{{ tool.short_name }}</a></h3><p>{{ tool.summary }}</p></div><a class="card-link" href="{{ url_for(tool.endpoint) }}">Open business calculator <span aria-hidden="true">→</span></a></article>
+      {% endfor %}
     </div>
     <p class="empty-state" data-tool-empty hidden>No matching tools. Try a broader search.</p>
   </div>
@@ -103,11 +106,12 @@
 
 <section class="section" id="pdf-tools" aria-labelledby="pdf-tools-title">
   <div class="container">
-    <div class="section-heading centered-heading"><span class="eyebrow">Private PDF tools</span><h2 id="pdf-tools-title">Organize, convert, inspect, and improve PDFs locally.</h2><p>Merge, crop, resize, flatten forms, render pages as images, and extract selectable text directly in your browser.</p></div>
+    <div class="section-heading centered-heading"><span class="eyebrow">Private PDF tools</span><h2 id="pdf-tools-title">Organize, convert, inspect, and improve PDFs locally.</h2><p>Merge, crop, resize, sign, stamp, compare, render pages, and extract selectable text directly in your browser.</p></div>
     <div class="tool-grid">
       {% for tool in pdf_tools %}<article class="tool-card"><div class="tool-card-head"><span class="icon-tile">{{ icon(tool.icon, 22) }}</span></div><div><span class="eyebrow">PDF</span><h3><a href="{{ url_for(tool.endpoint) }}">{{ tool.short_name }}</a></h3><p>{{ tool.summary }}</p></div><a class="card-link" href="{{ url_for(tool.endpoint) }}">Open PDF tool <span aria-hidden="true">→</span></a></article>{% endfor %}
       {% for tool in pdf_lab_tools %}<article class="tool-card"><div class="tool-card-head"><span class="icon-tile">{{ icon(tool.icon, 22) }}</span><span class="pill">PDF Lab</span></div><div><span class="eyebrow">Advanced PDF</span><h3><a href="{{ url_for(tool.endpoint) }}">{{ tool.short_name }}</a></h3><p>{{ tool.summary }}</p></div><a class="card-link" href="{{ url_for(tool.endpoint) }}">Open PDF Lab <span aria-hidden="true">→</span></a></article>{% endfor %}
       {% for tool in pdf_convert_tools %}<article class="tool-card"><div class="tool-card-head"><span class="icon-tile">{{ icon(tool.icon, 22) }}</span><span class="pill">Convert</span></div><div><span class="eyebrow">PDF conversion</span><h3><a href="{{ url_for(tool.endpoint) }}">{{ tool.short_name }}</a></h3><p>{{ tool.summary }}</p></div><a class="card-link" href="{{ url_for(tool.endpoint) }}">Open converter <span aria-hidden="true">→</span></a></article>{% endfor %}
+      {% for tool in pdf_markup_tools %}<article class="tool-card"><div class="tool-card-head"><span class="icon-tile">{{ icon(tool.icon, 22) }}</span><span class="pill">Markup</span></div><div><span class="eyebrow">PDF markup</span><h3><a href="{{ url_for(tool.endpoint) }}">{{ tool.short_name }}</a></h3><p>{{ tool.summary }}</p></div><a class="card-link" href="{{ url_for(tool.endpoint) }}">Open markup tool <span aria-hidden="true">→</span></a></article>{% endfor %}
     </div>
   </div>
 </section>

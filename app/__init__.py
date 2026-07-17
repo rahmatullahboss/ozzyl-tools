@@ -33,8 +33,10 @@ def create_app(config_name: str | None = None, test_config: dict | None = None) 
     from . import models  # noqa: F401
     from .advanced_tools import bp as advanced_tools_bp
     from .finance_tools import bp as finance_tools_bp
+    from .growth_tools import bp as growth_tools_bp
     from .pdf_convert import bp as pdf_convert_bp
     from .pdf_lab import bp as pdf_lab_bp
+    from .pdf_markup import bp as pdf_markup_bp
     from .pdf_tools import bp as pdf_tools_bp
     from .routes import bp
     from .utility_tools import bp as utility_tools_bp
@@ -44,9 +46,11 @@ def create_app(config_name: str | None = None, test_config: dict | None = None) 
     app.register_blueprint(utility_tools_bp)
     app.register_blueprint(advanced_tools_bp)
     app.register_blueprint(finance_tools_bp)
+    app.register_blueprint(growth_tools_bp)
     app.register_blueprint(pdf_tools_bp)
     app.register_blueprint(pdf_lab_bp)
     app.register_blueprint(pdf_convert_bp)
+    app.register_blueprint(pdf_markup_bp)
     app.register_blueprint(bp)
     register_request_hooks(app)
     register_error_handlers(app)
