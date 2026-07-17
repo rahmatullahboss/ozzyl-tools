@@ -15,8 +15,10 @@ from flask import (
 )
 from sqlalchemy import text
 
+from .advanced_tools import ADVANCED_CALCULATOR_TOOLS
 from .catalog import CATEGORIES, DOCUMENT_TYPES, TOOLS, TOOLS_BY_SLUG
 from .extensions import db
+from .pdf_lab import PDF_LAB_TOOLS
 from .pdf_tools import PDF_TOOLS
 from .utility_tools import UTILITY_TOOLS
 
@@ -43,8 +45,8 @@ def home():
         "home.html",
         page_title="Free Business Calculators & Workflow Tools",
         meta_description=(
-            "Fast, private business calculators and professional invoice, quotation, receipt, "
-            "and purchase-order generators. No sign-up required."
+            "Fast, private business calculators, advanced financial analysis, PDF tools, and "
+            "professional document generators. No sign-up required."
         ),
     )
 
@@ -155,8 +157,10 @@ def terms():
 def sitemap():
     urls = [url_for("main.home", _external=True)]
     urls.extend(url_for("main.calculator", slug=tool["slug"], _external=True) for tool in TOOLS)
+    urls.extend(url_for(tool["endpoint"], _external=True) for tool in ADVANCED_CALCULATOR_TOOLS)
     urls.extend(url_for(tool["endpoint"], _external=True) for tool in UTILITY_TOOLS)
     urls.extend(url_for(tool["endpoint"], _external=True) for tool in PDF_TOOLS)
+    urls.extend(url_for(tool["endpoint"], _external=True) for tool in PDF_LAB_TOOLS)
     urls.append(url_for("word_tools.word_unscrambler", _external=True))
     urls.extend(
         url_for("main.document_generator", document_type=kind, _external=True)
