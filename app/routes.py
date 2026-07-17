@@ -17,6 +17,7 @@ from sqlalchemy import text
 
 from .catalog import CATEGORIES, DOCUMENT_TYPES, TOOLS, TOOLS_BY_SLUG
 from .extensions import db
+from .pdf_tools import PDF_TOOLS
 from .utility_tools import UTILITY_TOOLS
 
 bp = Blueprint("main", __name__)
@@ -155,6 +156,7 @@ def sitemap():
     urls = [url_for("main.home", _external=True)]
     urls.extend(url_for("main.calculator", slug=tool["slug"], _external=True) for tool in TOOLS)
     urls.extend(url_for(tool["endpoint"], _external=True) for tool in UTILITY_TOOLS)
+    urls.extend(url_for(tool["endpoint"], _external=True) for tool in PDF_TOOLS)
     urls.append(url_for("word_tools.word_unscrambler", _external=True))
     urls.extend(
         url_for("main.document_generator", document_type=kind, _external=True)

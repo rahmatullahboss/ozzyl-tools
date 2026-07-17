@@ -1,0 +1,334 @@
+.pdf-hero {
+  padding: 4.75rem 0 3.5rem;
+  background:
+    radial-gradient(circle at 85% 10%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 28rem),
+    linear-gradient(180deg, color-mix(in srgb, var(--surface) 92%, var(--primary) 8%), var(--background));
+  border-bottom: 1px solid var(--border);
+}
+
+.pdf-hero-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2rem;
+  align-items: center;
+}
+
+.pdf-hero h1 {
+  margin: 1rem 0 0.75rem;
+  font-size: clamp(2.5rem, 7vw, 4.75rem);
+  letter-spacing: -0.055em;
+}
+
+.pdf-hero p {
+  max-width: 760px;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 1.08rem;
+  line-height: 1.75;
+}
+
+.pdf-hero .pill {
+  display: inline-flex;
+  margin-top: 1.5rem;
+}
+
+.pdf-hero-icon {
+  display: grid;
+  width: 6rem;
+  height: 6rem;
+  place-items: center;
+  color: var(--primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 1.75rem;
+  box-shadow: var(--shadow-lg);
+}
+
+.back-link {
+  display: inline-flex;
+  gap: 0.45rem;
+  align-items: center;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.pdf-workspace-section {
+  padding-top: 3.5rem;
+}
+
+.pdf-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.pdf-workspace,
+.pdf-info-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.pdf-workspace {
+  padding: clamp(1.25rem, 4vw, 2.25rem);
+}
+
+.pdf-workspace-heading {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.75rem;
+}
+
+.pdf-workspace-heading h2 {
+  margin: 0.3rem 0 0;
+  font-size: clamp(1.7rem, 4vw, 2.35rem);
+}
+
+.local-badge {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 0.4rem;
+  align-items: center;
+  padding: 0.55rem 0.75rem;
+  color: var(--success);
+  background: color-mix(in srgb, var(--success) 11%, transparent);
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.pdf-workspace form {
+  display: grid;
+  gap: 1rem;
+}
+
+.pdf-dropzone {
+  display: grid;
+  min-height: 230px;
+  padding: 2rem;
+  place-items: center;
+  align-content: center;
+  text-align: center;
+  color: var(--text-muted);
+  background: color-mix(in srgb, var(--background) 82%, var(--primary) 18%);
+  border: 2px dashed color-mix(in srgb, var(--border) 70%, var(--primary) 30%);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: border-color 160ms ease, background 160ms ease, transform 160ms ease;
+}
+
+.pdf-dropzone:hover,
+.pdf-dropzone.is-dragging {
+  color: var(--text);
+  background: color-mix(in srgb, var(--background) 70%, var(--primary) 30%);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+}
+
+.pdf-dropzone svg {
+  margin-bottom: 0.75rem;
+  color: var(--primary);
+}
+
+.pdf-dropzone strong {
+  color: var(--text);
+  font-size: 1.15rem;
+}
+
+.pdf-dropzone span {
+  max-width: 480px;
+  margin-top: 0.35rem;
+  line-height: 1.6;
+}
+
+.pdf-dropzone input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+}
+
+.pdf-file-list {
+  display: grid;
+  gap: 0.65rem;
+  padding: 0.75rem;
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.pdf-file-row {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+}
+
+.pdf-file-row > b {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+  border-radius: 0.65rem;
+  font-size: 0.8rem;
+}
+
+.pdf-file-row span {
+  display: grid;
+  min-width: 0;
+  gap: 0.15rem;
+}
+
+.pdf-file-row strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pdf-file-row small {
+  color: var(--text-muted);
+}
+
+.pdf-field-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.field-group {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.field-group > span {
+  font-weight: 800;
+}
+
+.field-group input,
+.field-group select {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0.75rem 0.9rem;
+  color: var(--text);
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  font: inherit;
+}
+
+.field-group input:focus,
+.field-group select:focus {
+  border-color: var(--primary);
+  outline: 3px solid color-mix(in srgb, var(--primary) 18%, transparent);
+}
+
+.field-group small {
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+.pdf-status {
+  margin-top: 1rem;
+  padding: 0.9rem 1rem;
+  color: var(--text-muted);
+  background: var(--background);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  line-height: 1.55;
+}
+
+.pdf-status[data-state="ready"] {
+  color: var(--primary);
+  border-color: color-mix(in srgb, var(--primary) 35%, var(--border));
+}
+
+.pdf-status[data-state="success"] {
+  color: var(--success);
+  border-color: color-mix(in srgb, var(--success) 35%, var(--border));
+  background: color-mix(in srgb, var(--success) 8%, var(--background));
+}
+
+.pdf-status[data-state="error"] {
+  color: var(--danger);
+  border-color: color-mix(in srgb, var(--danger) 35%, var(--border));
+  background: color-mix(in srgb, var(--danger) 8%, var(--background));
+}
+
+.pdf-sidebar {
+  display: grid;
+  gap: 1rem;
+}
+
+.pdf-info-card {
+  padding: 1.25rem;
+}
+
+.pdf-info-card h2 {
+  margin: 0.75rem 0 0.45rem;
+  font-size: 1.05rem;
+}
+
+.pdf-info-card p {
+  margin: 0;
+  color: var(--text-muted);
+  line-height: 1.65;
+}
+
+.button.is-loading {
+  cursor: progress;
+  opacity: 0.72;
+}
+
+@media (max-width: 860px) {
+  .pdf-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .pdf-sidebar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .pdf-hero {
+    padding: 3.5rem 0 2.5rem;
+  }
+
+  .pdf-hero-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .pdf-hero-icon {
+    display: none;
+  }
+
+  .pdf-workspace-heading {
+    display: grid;
+  }
+
+  .local-badge {
+    justify-self: start;
+  }
+
+  .pdf-field-grid,
+  .pdf-sidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .pdf-dropzone {
+    min-height: 190px;
+    padding: 1.25rem;
+  }
+}
