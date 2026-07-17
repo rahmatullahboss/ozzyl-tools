@@ -138,6 +138,148 @@
           {{ icon('download', 18) }} Create PDF
         </button>
       </form>
+
+      {% elif tool.kind == 'delete' %}
+      <form data-pdf-form="delete">
+        <label class="pdf-dropzone" data-dropzone>
+          {{ icon('upload', 28) }}
+          <strong>Select one PDF</strong>
+          <span>Choose the PDF that contains pages you no longer need.</span>
+          <input type="file" accept="application/pdf,.pdf" required data-pdf-file>
+        </label>
+        <div class="pdf-file-list" data-file-list hidden></div>
+        <label class="field-group">
+          <span>Pages to delete</span>
+          <input type="text" inputmode="numeric" placeholder="Example: 2, 5-7, 11" data-page-selection required>
+          <small>The output must retain at least one page.</small>
+        </label>
+        <button class="button button-primary button-full" type="submit" data-process-button disabled>
+          {{ icon('trash', 18) }} Remove pages and download
+        </button>
+      </form>
+
+      {% elif tool.kind == 'reorder' %}
+      <form data-pdf-form="reorder">
+        <label class="pdf-dropzone" data-dropzone>
+          {{ icon('upload', 28) }}
+          <strong>Select one PDF</strong>
+          <span>Enter a complete sequence containing every page exactly once.</span>
+          <input type="file" accept="application/pdf,.pdf" required data-pdf-file>
+        </label>
+        <div class="pdf-file-list" data-file-list hidden></div>
+        <label class="field-group">
+          <span>New page order</span>
+          <input type="text" inputmode="numeric" placeholder="Example: 3, 1-2, 4-8" data-page-order required>
+          <small>Reverse ranges are supported. Example: 8-1 reverses an eight-page PDF.</small>
+        </label>
+        <button class="button button-primary button-full" type="submit" data-process-button disabled>
+          {{ icon('layers', 18) }} Reorder and download
+        </button>
+      </form>
+
+      {% elif tool.kind == 'page_numbers' %}
+      <form data-pdf-form="page_numbers">
+        <label class="pdf-dropzone" data-dropzone>
+          {{ icon('upload', 28) }}
+          <strong>Select one PDF</strong>
+          <span>Add page numbers to every page or only a selected range.</span>
+          <input type="file" accept="application/pdf,.pdf" required data-pdf-file>
+        </label>
+        <div class="pdf-file-list" data-file-list hidden></div>
+        <div class="pdf-field-grid">
+          <label class="field-group">
+            <span>Pages</span>
+            <input type="text" inputmode="numeric" placeholder="Leave blank for all pages" data-page-selection>
+          </label>
+          <label class="field-group">
+            <span>Start number</span>
+            <input type="number" value="1" step="1" data-number-start>
+          </label>
+          <label class="field-group">
+            <span>Format</span>
+            <select data-number-format>
+              <option value="number">1</option>
+              <option value="page">Page 1</option>
+              <option value="total">1 / total</option>
+            </select>
+          </label>
+          <label class="field-group">
+            <span>Position</span>
+            <select data-number-position>
+              <option value="bottom-center">Bottom center</option>
+              <option value="bottom-right">Bottom right</option>
+              <option value="bottom-left">Bottom left</option>
+              <option value="top-center">Top center</option>
+              <option value="top-right">Top right</option>
+              <option value="top-left">Top left</option>
+            </select>
+          </label>
+          <label class="field-group">
+            <span>Font size</span>
+            <input type="number" value="12" min="6" max="72" step="1" data-number-size>
+          </label>
+          <label class="field-group">
+            <span>Margin</span>
+            <input type="number" value="24" min="0" max="144" step="1" data-number-margin>
+          </label>
+        </div>
+        <button class="button button-primary button-full" type="submit" data-process-button disabled>
+          {{ icon('download', 18) }} Add numbers and download
+        </button>
+      </form>
+
+      {% elif tool.kind == 'watermark' %}
+      <form data-pdf-form="watermark">
+        <label class="pdf-dropzone" data-dropzone>
+          {{ icon('upload', 28) }}
+          <strong>Select one PDF</strong>
+          <span>Add a visible label such as Draft, Confidential, or your company name.</span>
+          <input type="file" accept="application/pdf,.pdf" required data-pdf-file>
+        </label>
+        <div class="pdf-file-list" data-file-list hidden></div>
+        <label class="field-group">
+          <span>Watermark text</span>
+          <input type="text" maxlength="120" value="CONFIDENTIAL" data-watermark-text required>
+        </label>
+        <div class="pdf-field-grid">
+          <label class="field-group">
+            <span>Pages</span>
+            <input type="text" inputmode="numeric" placeholder="Leave blank for all pages" data-page-selection>
+          </label>
+          <label class="field-group">
+            <span>Position</span>
+            <select data-watermark-position>
+              <option value="center">Center</option>
+              <option value="top-center">Top center</option>
+              <option value="bottom-center">Bottom center</option>
+            </select>
+          </label>
+          <label class="field-group">
+            <span>Font size</span>
+            <input type="number" value="48" min="10" max="160" step="1" data-watermark-size>
+          </label>
+          <label class="field-group">
+            <span>Opacity</span>
+            <select data-watermark-opacity>
+              <option value="0.1">Light</option>
+              <option value="0.2" selected>Medium</option>
+              <option value="0.35">Strong</option>
+              <option value="0.5">Very strong</option>
+            </select>
+          </label>
+          <label class="field-group">
+            <span>Angle</span>
+            <select data-watermark-angle>
+              <option value="-45">Diagonal up</option>
+              <option value="0">Horizontal</option>
+              <option value="45">Diagonal down</option>
+            </select>
+          </label>
+        </div>
+        <button class="button button-primary button-full" type="submit" data-process-button disabled>
+          {{ icon('sparkles', 18) }} Watermark and download
+        </button>
+      </form>
       {% endif %}
 
       <div class="pdf-status" role="status" aria-live="polite" data-pdf-status hidden></div>
