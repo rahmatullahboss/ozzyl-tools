@@ -45,6 +45,46 @@ PDF_TOOLS = [
         "icon": "upload",
         "kind": "images",
     },
+    {
+        "slug": "delete-pdf-pages",
+        "endpoint": "pdf_tools.delete_pdf_pages",
+        "name": "Delete PDF Pages",
+        "short_name": "Delete PDF Pages",
+        "summary": "Remove unwanted pages and download a clean copy of your PDF.",
+        "category": "PDF",
+        "icon": "trash",
+        "kind": "delete",
+    },
+    {
+        "slug": "reorder-pdf-pages",
+        "endpoint": "pdf_tools.reorder_pdf_pages",
+        "name": "Reorder PDF Pages",
+        "short_name": "Reorder PDF Pages",
+        "summary": "Arrange every PDF page in a new custom order without uploading the file.",
+        "category": "PDF",
+        "icon": "layers",
+        "kind": "reorder",
+    },
+    {
+        "slug": "add-pdf-page-numbers",
+        "endpoint": "pdf_tools.add_pdf_page_numbers",
+        "name": "Add PDF Page Numbers",
+        "short_name": "PDF Page Numbers",
+        "summary": "Add customizable page numbers to all or selected pages of a PDF.",
+        "category": "PDF",
+        "icon": "file-text",
+        "kind": "page_numbers",
+    },
+    {
+        "slug": "watermark-pdf",
+        "endpoint": "pdf_tools.watermark_pdf",
+        "name": "Watermark PDF",
+        "short_name": "Watermark PDF",
+        "summary": "Add a private, draft, confidential, or custom text watermark to a PDF.",
+        "category": "PDF",
+        "icon": "sparkles",
+        "kind": "watermark",
+    },
 ]
 
 PDF_TOOLS_BY_SLUG = {tool["slug"]: tool for tool in PDF_TOOLS}
@@ -85,3 +125,23 @@ def rotate_pdf():
 @bp.get("/tools/images-to-pdf/")
 def images_to_pdf():
     return _render_pdf_tool("images-to-pdf")
+
+
+@bp.get("/tools/delete-pdf-pages/")
+def delete_pdf_pages():
+    return _render_pdf_tool("delete-pdf-pages")
+
+
+@bp.get("/tools/reorder-pdf-pages/")
+def reorder_pdf_pages():
+    return _render_pdf_tool("reorder-pdf-pages")
+
+
+@bp.get("/tools/add-pdf-page-numbers/")
+def add_pdf_page_numbers():
+    return _render_pdf_tool("add-pdf-page-numbers")
+
+
+@bp.get("/tools/watermark-pdf/")
+def watermark_pdf():
+    return _render_pdf_tool("watermark-pdf")
