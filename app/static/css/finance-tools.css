@@ -1,0 +1,13 @@
+.finance-error { margin-top: 1rem; }
+.finance-error[hidden] { display: none; }
+@media print {
+  .advanced-input-card,
+  .result-actions,
+  .advanced-stress-card,
+  .breadcrumbs,
+  .site-header,
+  .site-footer { display: none !important; }
+  .advanced-result-card,
+  .advanced-chart-card,
+  .advanced-table-card { box-shadow: none !important; break-inside: avoid; }
+}

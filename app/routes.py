@@ -18,6 +18,8 @@ from sqlalchemy import text
 from .advanced_tools import ADVANCED_CALCULATOR_TOOLS
 from .catalog import CATEGORIES, DOCUMENT_TYPES, TOOLS, TOOLS_BY_SLUG
 from .extensions import db
+from .finance_tools import FINANCE_TOOLS
+from .pdf_convert import PDF_CONVERT_TOOLS
 from .pdf_lab import PDF_LAB_TOOLS
 from .pdf_tools import PDF_TOOLS
 from .utility_tools import UTILITY_TOOLS
@@ -158,9 +160,11 @@ def sitemap():
     urls = [url_for("main.home", _external=True)]
     urls.extend(url_for("main.calculator", slug=tool["slug"], _external=True) for tool in TOOLS)
     urls.extend(url_for(tool["endpoint"], _external=True) for tool in ADVANCED_CALCULATOR_TOOLS)
+    urls.extend(url_for(tool["endpoint"], _external=True) for tool in FINANCE_TOOLS)
     urls.extend(url_for(tool["endpoint"], _external=True) for tool in UTILITY_TOOLS)
     urls.extend(url_for(tool["endpoint"], _external=True) for tool in PDF_TOOLS)
     urls.extend(url_for(tool["endpoint"], _external=True) for tool in PDF_LAB_TOOLS)
+    urls.extend(url_for(tool["endpoint"], _external=True) for tool in PDF_CONVERT_TOOLS)
     urls.append(url_for("word_tools.word_unscrambler", _external=True))
     urls.extend(
         url_for("main.document_generator", document_type=kind, _external=True)

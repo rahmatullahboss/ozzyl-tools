@@ -20,7 +20,7 @@
     <div class="hero-copy">
       <span class="pill">No sign-up · Private by default</span>
       <h1>Business tools that turn numbers into <span>clear decisions.</span></h1>
-      <p>Run advanced financial analysis, work with text and PDFs, generate secure passwords, and create professional documents—fast, free, and directly in your browser.</p>
+      <p>Run advanced financial analysis, convert and improve PDFs, work with text, generate secure passwords, and create professional documents—fast, free, and directly in your browser.</p>
       <div class="hero-actions">
         <a class="button button-primary" href="#calculators">Explore calculators {{ icon('arrow-right', 18) }}</a>
         <a class="button button-secondary" href="#pdf-tools">Browse PDF tools</a>
@@ -36,20 +36,20 @@
         <div class="preview-toolbar"><span></span><span></span><span></span></div>
         <div class="preview-body">
           <div class="preview-heading">
-            <span class="icon-tile">{{ icon('chart-up', 24) }}</span>
-            <div><strong>Savings Goal</strong><small>Projection and stress test</small></div>
+            <span class="icon-tile">{{ icon('bank', 24) }}</span>
+            <div><strong>Mortgage Affordability</strong><small>Rate scenarios and stress test</small></div>
           </div>
           <div class="preview-fields">
-            <div><span>Goal</span><strong>$50,000</strong></div>
-            <div><span>Current savings</span><strong>$5,000</strong></div>
+            <div><span>Gross income</span><strong>$8,000/mo</strong></div>
+            <div><span>Target DTI</span><strong>36%</strong></div>
           </div>
           <div class="preview-result">
-            <span>Required monthly saving</span><strong>$642.20</strong>
+            <span>Affordable home price</span><strong>Scenario based</strong>
             <div class="preview-meter"><span></span></div>
           </div>
           <div class="preview-stats">
-            <div><span>Projection</span><strong>5 years</strong></div>
-            <div><span>Return</span><strong>6.00%</strong></div>
+            <div><span>Rate</span><strong>7.00%</strong></div>
+            <div><span>Term</span><strong>30 years</strong></div>
           </div>
         </div>
       </div>
@@ -62,16 +62,8 @@
 <section class="section section-tight" aria-labelledby="quick-start-title">
   <div class="container">
     <div class="quick-search-card">
-      <div>
-        <span class="eyebrow">Find a calculator</span>
-        <h2 id="quick-start-title">What do you need to calculate?</h2>
-      </div>
-      <label class="search-field">
-        <span class="sr-only">Search business calculators</span>
-        {{ icon('search', 20) }}
-        <input type="search" placeholder="Search margin, savings, NPV, loan…" autocomplete="off" data-tool-search>
-        <kbd>/</kbd>
-      </label>
+      <div><span class="eyebrow">Find a calculator</span><h2 id="quick-start-title">What do you need to calculate?</h2></div>
+      <label class="search-field"><span class="sr-only">Search business calculators</span>{{ icon('search', 20) }}<input type="search" placeholder="Search DTI, mortgage, margin, savings…" autocomplete="off" data-tool-search><kbd>/</kbd></label>
       <div class="search-results" data-search-results hidden></div>
     </div>
   </div>
@@ -80,32 +72,19 @@
 <section class="section" id="calculators" aria-labelledby="calculators-title">
   <div class="container">
     <div class="section-heading split-heading">
-      <div>
-        <span class="eyebrow">Business calculators</span>
-        <h2 id="calculators-title">From quick answers to advanced projections.</h2>
-        <p>Use instant calculators or open an advanced model with stress testing, charts, projections, and report export.</p>
-      </div>
-      <div class="category-filter" role="group" aria-label="Filter calculators">
-        <button type="button" class="filter-chip is-active" data-category-filter="all" aria-pressed="true">All</button>
-        {% for category in categories %}
-        <button type="button" class="filter-chip" data-category-filter="{{ category|lower }}" aria-pressed="false">{{ category }}</button>
-        {% endfor %}
-      </div>
+      <div><span class="eyebrow">Business calculators</span><h2 id="calculators-title">From quick answers to advanced projections.</h2><p>Use instant calculators or open an advanced model with stress testing, charts, projections, and report export.</p></div>
+      <div class="category-filter" role="group" aria-label="Filter calculators"><button type="button" class="filter-chip is-active" data-category-filter="all" aria-pressed="true">All</button>{% for category in categories %}<button type="button" class="filter-chip" data-category-filter="{{ category|lower }}" aria-pressed="false">{{ category }}</button>{% endfor %}</div>
     </div>
 
-    <div class="favorites-section" data-favorites-section hidden>
-      <div class="mini-heading"><h3>Your favorites</h3><span>Saved on this device</span></div>
-      <div class="tool-grid tool-grid-small" data-favorites-grid></div>
-    </div>
+    <div class="favorites-section" data-favorites-section hidden><div class="mini-heading"><h3>Your favorites</h3><span>Saved on this device</span></div><div class="tool-grid tool-grid-small" data-favorites-grid></div></div>
 
     <div class="tool-grid" data-tool-grid>
       {% for tool in all_tools %}{{ tool_card(tool) }}{% endfor %}
       {% for tool in advanced_calculator_tools %}
-      <article class="tool-card" data-tool-card data-name="{{ tool.name|lower }}" data-category="{{ tool.category|lower }}">
-        <div class="tool-card-head"><span class="icon-tile">{{ icon(tool.icon, 22) }}</span><span class="pill">Advanced</span></div>
-        <div><span class="eyebrow">{{ tool.category }}</span><h3><a href="{{ url_for(tool.endpoint) }}">{{ tool.short_name }}</a></h3><p>{{ tool.summary }}</p></div>
-        <a class="card-link" href="{{ url_for(tool.endpoint) }}">Open advanced calculator <span aria-hidden="true">→</span></a>
-      </article>
+      <article class="tool-card" data-tool-card data-name="{{ tool.name|lower }}" data-category="{{ tool.category|lower }}"><div class="tool-card-head"><span class="icon-tile">{{ icon(tool.icon, 22) }}</span><span class="pill">Advanced</span></div><div><span class="eyebrow">{{ tool.category }}</span><h3><a href="{{ url_for(tool.endpoint) }}">{{ tool.short_name }}</a></h3><p>{{ tool.summary }}</p></div><a class="card-link" href="{{ url_for(tool.endpoint) }}">Open advanced calculator <span aria-hidden="true">→</span></a></article>
+      {% endfor %}
+      {% for tool in finance_tools %}
+      <article class="tool-card" data-tool-card data-name="{{ tool.name|lower }}" data-category="{{ tool.category|lower }}"><div class="tool-card-head"><span class="icon-tile">{{ icon(tool.icon, 22) }}</span><span class="pill">Finance</span></div><div><span class="eyebrow">{{ tool.category }}</span><h3><a href="{{ url_for(tool.endpoint) }}">{{ tool.short_name }}</a></h3><p>{{ tool.summary }}</p></div><a class="card-link" href="{{ url_for(tool.endpoint) }}">Open finance calculator <span aria-hidden="true">→</span></a></article>
       {% endfor %}
     </div>
     <p class="empty-state" data-tool-empty hidden>No matching tools. Try a broader search.</p>
@@ -114,91 +93,28 @@
 
 <section class="section section-surface" id="utilities" aria-labelledby="utilities-title">
   <div class="container">
-    <div class="section-heading centered-heading">
-      <span class="eyebrow">Everyday utilities</span>
-      <h2 id="utilities-title">Quick tools for writing, math, and security.</h2>
-      <p>Everything runs directly in your browser, with no account and no unnecessary uploads.</p>
-    </div>
+    <div class="section-heading centered-heading"><span class="eyebrow">Everyday utilities</span><h2 id="utilities-title">Quick tools for writing, math, and security.</h2><p>Everything runs directly in your browser, with no account and no unnecessary uploads.</p></div>
     <div class="tool-grid">
-      <article class="tool-card">
-        <div class="tool-card-head"><span class="icon-tile">{{ icon('letters', 22) }}</span></div>
-        <div><span class="eyebrow">Writing</span><h3><a href="{{ url_for('word_tools.word_unscrambler') }}">Word Unscrambler</a></h3><p>Find exact anagrams and shorter English words from a set of letters.</p></div>
-        <a class="card-link" href="{{ url_for('word_tools.word_unscrambler') }}">Open utility <span aria-hidden="true">→</span></a>
-      </article>
-      {% for tool in utility_tools %}
-      <article class="tool-card">
-        <div class="tool-card-head"><span class="icon-tile">{{ icon(tool.icon, 22) }}</span></div>
-        <div><span class="eyebrow">{{ tool.category }}</span><h3><a href="{{ url_for(tool.endpoint) }}">{{ tool.short_name }}</a></h3><p>{{ tool.summary }}</p></div>
-        <a class="card-link" href="{{ url_for(tool.endpoint) }}">Open utility <span aria-hidden="true">→</span></a>
-      </article>
-      {% endfor %}
+      <article class="tool-card"><div class="tool-card-head"><span class="icon-tile">{{ icon('letters', 22) }}</span></div><div><span class="eyebrow">Writing</span><h3><a href="{{ url_for('word_tools.word_unscrambler') }}">Word Unscrambler</a></h3><p>Find exact anagrams and shorter English words from a set of letters.</p></div><a class="card-link" href="{{ url_for('word_tools.word_unscrambler') }}">Open utility <span aria-hidden="true">→</span></a></article>
+      {% for tool in utility_tools %}<article class="tool-card"><div class="tool-card-head"><span class="icon-tile">{{ icon(tool.icon, 22) }}</span></div><div><span class="eyebrow">{{ tool.category }}</span><h3><a href="{{ url_for(tool.endpoint) }}">{{ tool.short_name }}</a></h3><p>{{ tool.summary }}</p></div><a class="card-link" href="{{ url_for(tool.endpoint) }}">Open utility <span aria-hidden="true">→</span></a></article>{% endfor %}
     </div>
   </div>
 </section>
 
 <section class="section" id="pdf-tools" aria-labelledby="pdf-tools-title">
   <div class="container">
-    <div class="section-heading centered-heading">
-      <span class="eyebrow">Private PDF tools</span>
-      <h2 id="pdf-tools-title">Organize, inspect, and improve PDFs locally.</h2>
-      <p>Merge, extract, rotate, crop, duplicate, insert pages, and edit document details directly in your browser.</p>
-    </div>
+    <div class="section-heading centered-heading"><span class="eyebrow">Private PDF tools</span><h2 id="pdf-tools-title">Organize, convert, inspect, and improve PDFs locally.</h2><p>Merge, crop, resize, flatten forms, render pages as images, and extract selectable text directly in your browser.</p></div>
     <div class="tool-grid">
-      {% for tool in pdf_tools %}
-      <article class="tool-card">
-        <div class="tool-card-head"><span class="icon-tile">{{ icon(tool.icon, 22) }}</span></div>
-        <div><span class="eyebrow">PDF</span><h3><a href="{{ url_for(tool.endpoint) }}">{{ tool.short_name }}</a></h3><p>{{ tool.summary }}</p></div>
-        <a class="card-link" href="{{ url_for(tool.endpoint) }}">Open PDF tool <span aria-hidden="true">→</span></a>
-      </article>
-      {% endfor %}
-      {% for tool in pdf_lab_tools %}
-      <article class="tool-card">
-        <div class="tool-card-head"><span class="icon-tile">{{ icon(tool.icon, 22) }}</span><span class="pill">PDF Lab</span></div>
-        <div><span class="eyebrow">Advanced PDF</span><h3><a href="{{ url_for(tool.endpoint) }}">{{ tool.short_name }}</a></h3><p>{{ tool.summary }}</p></div>
-        <a class="card-link" href="{{ url_for(tool.endpoint) }}">Open PDF Lab <span aria-hidden="true">→</span></a>
-      </article>
-      {% endfor %}
+      {% for tool in pdf_tools %}<article class="tool-card"><div class="tool-card-head"><span class="icon-tile">{{ icon(tool.icon, 22) }}</span></div><div><span class="eyebrow">PDF</span><h3><a href="{{ url_for(tool.endpoint) }}">{{ tool.short_name }}</a></h3><p>{{ tool.summary }}</p></div><a class="card-link" href="{{ url_for(tool.endpoint) }}">Open PDF tool <span aria-hidden="true">→</span></a></article>{% endfor %}
+      {% for tool in pdf_lab_tools %}<article class="tool-card"><div class="tool-card-head"><span class="icon-tile">{{ icon(tool.icon, 22) }}</span><span class="pill">PDF Lab</span></div><div><span class="eyebrow">Advanced PDF</span><h3><a href="{{ url_for(tool.endpoint) }}">{{ tool.short_name }}</a></h3><p>{{ tool.summary }}</p></div><a class="card-link" href="{{ url_for(tool.endpoint) }}">Open PDF Lab <span aria-hidden="true">→</span></a></article>{% endfor %}
+      {% for tool in pdf_convert_tools %}<article class="tool-card"><div class="tool-card-head"><span class="icon-tile">{{ icon(tool.icon, 22) }}</span><span class="pill">Convert</span></div><div><span class="eyebrow">PDF conversion</span><h3><a href="{{ url_for(tool.endpoint) }}">{{ tool.short_name }}</a></h3><p>{{ tool.summary }}</p></div><a class="card-link" href="{{ url_for(tool.endpoint) }}">Open converter <span aria-hidden="true">→</span></a></article>{% endfor %}
     </div>
   </div>
 </section>
 
-<section class="section section-surface" id="documents" aria-labelledby="documents-title">
-  <div class="container">
-    <div class="section-heading centered-heading">
-      <span class="eyebrow">Document workflow</span>
-      <h2 id="documents-title">Create polished business documents in minutes.</h2>
-      <p>Add your logo, customize currency and tax, autosave drafts, and print or export to PDF.</p>
-    </div>
-    <div class="document-grid">
-      {% for kind, document in document_types.items() %}
-      <article class="document-card">
-        <span class="document-icon">{{ icon(document.icon, 25) }}</span>
-        <div><h3>{{ document.noun }}</h3><p>{{ document.summary }}</p></div>
-        <a class="button button-secondary button-full" href="{{ url_for('main.document_generator', document_type=kind) }}">Create {{ document.noun|lower }} {{ icon('arrow-right', 17) }}</a>
-      </article>
-      {% endfor %}
-    </div>
-  </div>
-</section>
+<section class="section section-surface" id="documents" aria-labelledby="documents-title"><div class="container"><div class="section-heading centered-heading"><span class="eyebrow">Document workflow</span><h2 id="documents-title">Create polished business documents in minutes.</h2><p>Add your logo, customize currency and tax, autosave drafts, and print or export to PDF.</p></div><div class="document-grid">{% for kind, document in document_types.items() %}<article class="document-card"><span class="document-icon">{{ icon(document.icon, 25) }}</span><div><h3>{{ document.noun }}</h3><p>{{ document.summary }}</p></div><a class="button button-secondary button-full" href="{{ url_for('main.document_generator', document_type=kind) }}">Create {{ document.noun|lower }} {{ icon('arrow-right', 17) }}</a></article>{% endfor %}</div></div></section>
 
-<section class="section" id="why-us" aria-labelledby="why-us-title">
-  <div class="container">
-    <div class="section-heading centered-heading">
-      <span class="eyebrow">Designed for real work</span>
-      <h2 id="why-us-title">Fast enough for daily use. Detailed enough to plan.</h2>
-    </div>
-    <div class="benefit-grid">
-      <article><span>{{ icon('bolt', 24) }}</span><h3>Instant and lightweight</h3><p>No heavy dashboard or account wall. Open a tool and start working.</p></article>
-      <article><span>{{ icon('shield', 24) }}</span><h3>Local-first privacy</h3><p>Inputs, PDF files, and document drafts stay in your browser unless you later choose cloud sync.</p></article>
-      <article><span>{{ icon('chart-up', 24) }}</span><h3>Advanced analysis</h3><p>Stress tests, projections, charts, CSV reports, and shareable scenarios help explain the result.</p></article>
-    </div>
-  </div>
-</section>
+<section class="section" id="why-us"><div class="container"><div class="section-heading centered-heading"><span class="eyebrow">Designed for real work</span><h2>Fast enough for daily use. Detailed enough to plan.</h2></div><div class="benefit-grid"><article><span>{{ icon('bolt', 24) }}</span><h3>Instant and lightweight</h3><p>No heavy dashboard or account wall. Open a tool and start working.</p></article><article><span>{{ icon('shield', 24) }}</span><h3>Local-first privacy</h3><p>Inputs, PDF files, and document drafts stay in your browser unless you later choose cloud sync.</p></article><article><span>{{ icon('chart-up', 24) }}</span><h3>Advanced analysis</h3><p>Stress tests, projections, charts, CSV reports, and shareable scenarios help explain the result.</p></article></div></div></section>
 
-<section class="section section-cta">
-  <div class="container cta-card">
-    <div><span class="eyebrow">Start with a useful result</span><h2>Plan the target, prepare the PDF, then create the invoice.</h2><p>Move from financial analysis to practical document work without switching between multiple websites.</p></div>
-    <div class="cta-actions"><a class="button button-primary" href="{{ url_for('advanced_tools.savings_goal') }}">Plan a savings goal</a><a class="button button-secondary" href="{{ url_for('pdf_lab.crop_pdf') }}">Crop a PDF</a></div>
-  </div>
-</section>
+<section class="section section-cta"><div class="container cta-card"><div><span class="eyebrow">Start with a useful result</span><h2>Check affordability, convert the PDF, then create the document.</h2><p>Move from borrowing analysis to practical document work without switching between multiple websites.</p></div><div class="cta-actions"><a class="button button-primary" href="{{ url_for('finance_tools.mortgage_affordability') }}">Check affordability</a><a class="button button-secondary" href="{{ url_for('pdf_convert.pdf_to_images') }}">Convert a PDF</a></div></div></section>
 {% endblock %}

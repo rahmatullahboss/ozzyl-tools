@@ -32,6 +32,8 @@ def create_app(config_name: str | None = None, test_config: dict | None = None) 
     # Import models after the extension is initialized so Alembic sees metadata.
     from . import models  # noqa: F401
     from .advanced_tools import bp as advanced_tools_bp
+    from .finance_tools import bp as finance_tools_bp
+    from .pdf_convert import bp as pdf_convert_bp
     from .pdf_lab import bp as pdf_lab_bp
     from .pdf_tools import bp as pdf_tools_bp
     from .routes import bp
@@ -41,8 +43,10 @@ def create_app(config_name: str | None = None, test_config: dict | None = None) 
     app.register_blueprint(word_tools_bp)
     app.register_blueprint(utility_tools_bp)
     app.register_blueprint(advanced_tools_bp)
+    app.register_blueprint(finance_tools_bp)
     app.register_blueprint(pdf_tools_bp)
     app.register_blueprint(pdf_lab_bp)
+    app.register_blueprint(pdf_convert_bp)
     app.register_blueprint(bp)
     register_request_hooks(app)
     register_error_handlers(app)
@@ -80,7 +84,7 @@ def register_request_hooks(app: Flask) -> None:
                     "base-uri 'self'",
                     "form-action 'self'",
                     "frame-ancestors 'none'",
-                    "worker-src 'self' blob:",
+                    "worker-src 'self' blob: https://unpkg.com",
                     "manifest-src 'self'",
                     "upgrade-insecure-requests" if request.is_secure else "",
                 ]
