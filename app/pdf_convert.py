@@ -53,9 +53,7 @@ def inject_pdf_convert_tools() -> dict:
 
 def _render(slug: str):
     tool = PDF_CONVERT_TOOLS_BY_SLUG[slug]
-    related = [
-        candidate for candidate in PDF_CONVERT_TOOLS if candidate["slug"] != slug
-    ]
+    related = [candidate for candidate in PDF_CONVERT_TOOLS if candidate["slug"] != slug]
     return render_template(
         "pdf-convert-tool.html",
         tool=tool,
