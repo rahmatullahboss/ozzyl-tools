@@ -32,7 +32,7 @@
   <script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {
     "@context": "https://schema.org",
     "@graph": [
-      {"@type": "Organization", "@id": site_url + "#organization", "name": site_name, "url": site_url, "email": contact_email},
+      {"@type": "Organization", "@id": site_url + "#organization", "name": site_name, "url": site_url, "email": contact_email, "contactPoint": [{"@type": "ContactPoint", "contactType": "technical support", "email": contact_email, "availableLanguage": ["English", "Bengali"]}]},
       {"@type": "WebSite", "@id": site_url + "#website", "name": site_name, "url": site_url, "description": "Free, privacy-first and halal-friendly online tools.", "publisher": {"@id": site_url + "#organization"}, "inLanguage": default_locale}
     ]
   }|tojson }}</script>
@@ -48,6 +48,7 @@
         <a href="{{ url_for('main.home') }}#utilities">Utilities</a>
         <a href="{{ url_for('main.home') }}#pdf-tools">PDF Tools</a>
         <a href="{{ url_for('main.home') }}#documents">Documents</a>
+        <a href="{{ url_for('main.home') }}#report-problem">Report a problem</a>
         <a href="{{ url_for('main.about') }}">About</a>
       </nav>
       <div class="header-actions">
@@ -61,6 +62,7 @@
         <a href="{{ url_for('main.home') }}#utilities">Utilities</a>
         <a href="{{ url_for('main.home') }}#pdf-tools">PDF tools</a>
         <a href="{{ url_for('main.home') }}#documents">Document generators</a>
+        <a href="{{ url_for('main.home') }}#report-problem">Report a problem</a>
         <a href="{{ url_for('main.about') }}">About</a>
         <a href="{{ url_for('main.privacy') }}">Privacy</a>
         <a href="{{ url_for('main.terms') }}">Terms</a>
@@ -74,7 +76,7 @@
     <div class="container footer-grid">
       <div><a class="brand brand-footer" href="{{ url_for('main.home') }}"><span class="brand-mark" aria-hidden="true">O</span><span>{{ site_name }}</span></a><p>Fast, private and halal-friendly tools for practical business, PDF, data, and writing work.</p></div>
       <div><h2>Popular tools</h2><a href="{{ url_for('main.calculator', slug='profit-margin-calculator') }}">Profit margin</a><a href="{{ url_for('pdf_tools.merge_pdf') }}">Merge PDF</a><a href="{{ url_for('utility_tools.word_counter') }}">Word counter</a><a href="{{ url_for('word_tools.word_unscrambler') }}">Word unscrambler</a><a href="{{ url_for('main.document_generator', document_type='invoice') }}">Invoice generator</a></div>
-      <div><h2>Company</h2><a href="{{ url_for('main.about') }}">About</a><a href="{{ url_for('main.privacy') }}">Privacy</a><a href="{{ url_for('main.terms') }}">Terms</a><a href="mailto:{{ contact_email }}">Contact</a></div>
+      <div><h2>Company</h2><a href="{{ url_for('main.about') }}">About</a><a href="{{ url_for('main.privacy') }}">Privacy</a><a href="{{ url_for('main.terms') }}">Terms</a><a href="mailto:{{ contact_email }}">Contact</a><a href="mailto:{{ contact_email }}?subject=Report%20a%20problem%20on%20Ozzyl%20Tools&amp;body=Page%3A%20{{ site_url }}{{ request.path }}%0A%0APlease%20describe%20the%20problem%3A%0A%0AExpected%20result%3A%0A%0ABrowser%20or%20device%20(optional)%3A%20">Report a problem</a></div>
     </div>
     <div class="container footer-bottom"><span>© {{ current_year }} {{ site_name }}</span><span>Content reviewed {{ content_updated }}.</span></div>
   </footer>
