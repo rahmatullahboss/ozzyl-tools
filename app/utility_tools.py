@@ -2,9 +2,11 @@ from __future__ import annotations
 
 from flask import Blueprint, render_template
 
+from .data_tools import DATA_TOOLS, DATA_TOOLS_BY_SLUG
+
 bp = Blueprint("utility_tools", __name__)
 
-UTILITY_TOOLS = [
+CORE_UTILITY_TOOLS = [
     {
         "slug": "word-counter",
         "endpoint": "utility_tools.word_counter",
@@ -51,6 +53,7 @@ UTILITY_TOOLS = [
     },
 ]
 
+UTILITY_TOOLS = [*CORE_UTILITY_TOOLS, *DATA_TOOLS]
 UTILITY_TOOLS_BY_SLUG = {tool["slug"]: tool for tool in UTILITY_TOOLS}
 
 
@@ -61,9 +64,21 @@ def inject_utility_tools() -> dict:
 
 def _render_utility(slug: str):
     tool = UTILITY_TOOLS_BY_SLUG[slug]
-    related_tools = [candidate for candidate in UTILITY_TOOLS if candidate["slug"] != slug][:3]
+    related_tools = [candidate for candidate in CORE_UTILITY_TOOLS if candidate["slug"] != slug][:3]
     return render_template(
         "utility-tool.html",
+        tool=tool,
+        related_tools=related_tools,
+        page_title=tool["name"],
+        meta_description=tool["summary"],
+    )
+
+
+def _render_data_utility(slug: str):
+    tool = DATA_TOOLS_BY_SLUG[slug]
+    related_tools = [candidate for candidate in DATA_TOOLS if candidate["slug"] != slug][:3]
+    return render_template(
+        "data-tool.html",
         tool=tool,
         related_tools=related_tools,
         page_title=tool["name"],
@@ -89,3 +104,43 @@ def percentage_calculator():
 @bp.get("/tools/password-generator/")
 def password_generator():
     return _render_utility("password-generator")
+
+
+@bp.get("/tools/utm-campaign-url-builder/")
+def utm_builder():
+    return _render_data_utility("utm-campaign-url-builder")
+
+
+@bp.get("/tools/qr-code-generator/")
+def qr_code_generator():
+    return _render_data_utility("qr-code-generator")
+
+
+@bp.get("/tools/json-formatter-validator/")
+def json_formatter():
+    return _render_data_utility("json-formatter-validator")
+
+
+@bp.get("/tools/csv-json-converter/")
+def csv_json_converter():
+    return _render_data_utility("csv-json-converter")
+
+
+@bp.get("/tools/base64-encoder-decoder/")
+def base64_tool():
+    return _render_data_utility("base64-encoder-decoder")
+
+
+@bp.get("/tools/uuid-generator/")
+def uuid_generator():
+    return _render_data_utility("uuid-generator")
+
+
+@bp.get("/tools/unix-timestamp-converter/")
+def timestamp_converter():
+    return _render_data_utility("unix-timestamp-converter")
+
+
+@bp.get("/tools/regex-tester/")
+def regex_tester():
+    return _render_data_utility("regex-tester")
