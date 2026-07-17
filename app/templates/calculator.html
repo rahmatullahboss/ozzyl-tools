@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 {% from 'macros.html' import icon, tool_card %}
 
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/advanced-calculator.css') }}">
+{% endblock %}
+
 {% block structured_data %}
 <script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {
   "@context": "https://schema.org",
@@ -68,12 +72,57 @@
       </div>
       <p class="privacy-note">{{ icon('lock', 15) }} Values are calculated and saved on this device.</p>
     </aside>
+
+    <section class="advanced-analysis" aria-labelledby="advanced-analysis-title">
+      <div class="advanced-analysis-heading">
+        <div><span class="eyebrow">Advanced analysis</span><h2 id="advanced-analysis-title">Compare, stress-test, and export</h2><p>Explore another scenario, test input changes, and download the analysis as CSV.</p></div>
+        <button class="button button-secondary" type="button" data-export-analysis>{{ icon('download', 17) }} Export CSV</button>
+      </div>
+
+      <div class="analysis-grid">
+        <article class="analysis-card">
+          <div class="analysis-card-heading"><div><span class="eyebrow">Scenario planning</span><h3>Compare Scenario B</h3></div><label class="analysis-toggle"><input type="checkbox" data-scenario-toggle><span>Enable</span></label></div>
+          <p>Change any input in a second scenario and see the difference for every result.</p>
+          <div data-scenario-panel hidden>
+            <div class="form-grid scenario-grid">
+              {% for input in tool.inputs %}
+              <div class="field-group">
+                <label for="scenario-{{ input.id }}">{{ input.label }}</label>
+                <div class="number-field" data-kind="{{ input.kind }}">
+                  <input id="scenario-{{ input.id }}" name="{{ input.id }}" type="number" inputmode="decimal" value="{{ input.value }}" min="{{ input.min }}" {% if input.max is defined %}max="{{ input.max }}"{% endif %} step="{{ input.step }}" data-scenario-input>
+                  <span class="field-affix" aria-hidden="true"></span>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="analysis-table-wrap" data-scenario-table hidden><table><thead></thead><tbody></tbody></table></div>
+        </article>
+
+        <article class="analysis-card">
+          <div class="analysis-card-heading"><div><span class="eyebrow">Sensitivity</span><h3>What changes the result?</h3></div><span class="analysis-badge">±10%</span></div>
+          <p>Each row changes one input while holding every other value constant.</p>
+          <div class="analysis-table-wrap"><table data-sensitivity-table><thead></thead><tbody></tbody></table></div>
+        </article>
+      </div>
+
+      <article class="analysis-card projection-card" data-projection-card hidden>
+        <div class="analysis-card-heading">
+          <div><span class="eyebrow">Detailed projection</span><h3>Schedule and future breakdown</h3></div>
+          {% if tool.formula == 'loan' %}
+          <label class="compact-analysis-field"><span>Extra monthly payment</span><div class="number-field"><input type="number" min="0" step="0.01" value="0" data-loan-extra-payment><span class="field-affix" data-advanced-currency-affix></span></div></label>
+          {% endif %}
+        </div>
+        <p class="projection-summary" data-projection-summary></p>
+        <div class="analysis-table-wrap projection-table-wrap"><table data-projection-table><thead></thead><tbody></tbody></table></div>
+      </article>
+    </section>
   </div>
 </section>
 
 <section class="section section-surface">
   <div class="container content-grid">
-    <article class="prose-card"><span class="eyebrow">How it works</span><h2>Use the result confidently</h2><p>{{ tool.guide }}</p><h3>Practical workflow</h3><ol><li>Enter values from the same time period and currency.</li><li>Review the formula and result assumptions.</li><li>Copy or share the calculation with your team.</li><li>Verify tax, payroll, lending, or legal rules that vary by location.</li></ol></article>
+    <article class="prose-card"><span class="eyebrow">How it works</span><h2>Use the result confidently</h2><p>{{ tool.guide }}</p><h3>Practical workflow</h3><ol><li>Enter values from the same time period and currency.</li><li>Review the formula and result assumptions.</li><li>Compare a second scenario and review sensitivity.</li><li>Verify tax, payroll, lending, or legal rules that vary by location.</li></ol></article>
     <aside class="prose-card callout-card"><span>{{ icon('sparkles', 22) }}</span><h2>Turn the result into a document</h2><p>Create a professional quotation or invoice with the same currency and pricing.</p><a class="button button-primary button-full" href="{{ url_for('main.document_generator', document_type='quotation') }}">Create quotation</a></aside>
   </div>
 </section>
