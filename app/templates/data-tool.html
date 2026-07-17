@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import icon %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/utility-tools.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/data-tools.css') }}">
+{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": tool.name,
+  "url": site_url + request.path,
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+  "description": tool.summary
+}|tojson }}</script>
+{% endblock %}
+
+{% block content %}
+<section class="page-hero page-hero-compact">
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ url_for('main.home') }}">Home</a><span>/</span><a href="{{ url_for('main.home') }}#utilities">Utilities</a><span>/</span><span aria-current="page">{{ tool.short_name }}</span></nav>
+    <div class="tool-title-row"><span class="icon-tile icon-tile-large">{{ icon(tool.icon, 28) }}</span><div><span class="eyebrow">{{ tool.category }} utility</span><h1>{{ tool.name }}</h1><p>{{ tool.summary }}</p></div><span class="advanced-private-badge">{{ icon('lock', 16) }} Local processing</span></div>
+  </div>
+</section>
+
+<section class="section data-tool-section">
+  <div class="container data-tool-layout" data-data-tool="{{ tool.kind }}" data-tool-slug="{{ tool.slug }}">
+    {% if tool.kind == 'utm' %}
+    <form class="data-card" data-utm-form novalidate>
+      <div class="card-heading"><div><span class="eyebrow">Campaign setup</span><h2>Build a trackable URL</h2></div><button type="button" class="text-button" data-reset-tool>{{ icon('reset', 16) }} Reset</button></div>
+      <div class="data-form-grid">
+        <div class="field-group span-two"><label for="utm-url">Destination URL</label><input id="utm-url" type="url" value="https://example.com/landing-page" data-utm-field="base_url" required></div>
+        <div class="field-group"><label for="utm-source">Source</label><input id="utm-source" value="newsletter" data-utm-field="utm_source" required></div>
+        <div class="field-group"><label for="utm-medium">Medium</label><input id="utm-medium" value="email" data-utm-field="utm_medium" required></div>
+        <div class="field-group"><label for="utm-campaign">Campaign</label><input id="utm-campaign" value="summer launch" data-utm-field="utm_campaign" required></div>
+        <div class="field-group"><label for="utm-id">Campaign ID</label><input id="utm-id" placeholder="Optional" data-utm-field="utm_id"></div>
+        <div class="field-group"><label for="utm-term">Paid keyword</label><input id="utm-term" placeholder="Optional" data-utm-field="utm_term"></div>
+        <div class="field-group"><label for="utm-content">Creative/content</label><input id="utm-content" placeholder="hero-button" data-utm-field="utm_content"></div>
+        <div class="field-group"><label for="utm-style">Naming style</label><select id="utm-style" data-utm-style><option value="hyphen">lowercase-hyphen</option><option value="underscore">lowercase_underscore</option><option value="preserve">Preserve input</option></select></div>
+      </div>
+      <div class="formula-note">{{ icon('info', 17) }} <span>Existing query parameters stay intact, while duplicate UTM values are replaced.</span></div>
+    </form>
+    <aside class="data-result-card">
+      <div class="card-heading"><div><span class="eyebrow">Generated URL</span><h2>Campaign link</h2></div></div>
+      <output class="data-url-output" data-utm-output>—</output>
+      <div class="data-stat-grid"><div><span>URL length</span><strong data-utm-length>0</strong></div><div><span>Parameters</span><strong data-utm-count>0</strong></div></div>
+      <div class="data-parameter-list" data-utm-parameters></div>
+      <div class="data-action-row"><button type="button" class="button button-primary" data-copy-output>{{ icon('copy', 17) }} Copy</button><button type="button" class="button button-secondary" data-open-url>Open</button><button type="button" class="button button-secondary" data-download-output>{{ icon('download', 17) }} TXT</button></div>
+      <div class="data-error" data-tool-error hidden></div>
+    </aside>
+
+    {% elif tool.kind == 'qr' %}
+    <form class="data-card" data-qr-form novalidate>
+      <div class="card-heading"><div><span class="eyebrow">QR content</span><h2>Create a scannable code</h2></div><button type="button" class="text-button" data-reset-tool>{{ icon('reset', 16) }} Reset</button></div>
+      <div class="field-group data-textarea"><label for="qr-content">URL or text</label><textarea id="qr-content" rows="7" data-qr-content>https://example.com</textarea></div>
+      <div class="data-form-grid">
+        <div class="field-group"><label for="qr-size">Image size</label><select id="qr-size" data-qr-size><option value="256">256 px</option><option value="512" selected>512 px</option><option value="768">768 px</option><option value="1024">1024 px</option></select></div>
+        <div class="field-group"><label for="qr-level">Error correction</label><select id="qr-level" data-qr-level><option value="L">Low</option><option value="M" selected>Medium</option><option value="Q">Quartile</option><option value="H">High</option></select></div>
+        <div class="field-group"><label for="qr-margin">Margin</label><input id="qr-margin" type="number" min="0" max="12" value="4" data-qr-margin></div>
+        <div class="field-group"><label for="qr-dark">Foreground</label><input id="qr-dark" type="color" value="#111827" data-qr-dark></div>
+        <div class="field-group"><label for="qr-light">Background</label><input id="qr-light" type="color" value="#ffffff" data-qr-light></div>
+      </div>
+    </form>
+    <aside class="data-result-card">
+      <div class="card-heading"><div><span class="eyebrow">Live preview</span><h2>Your QR code</h2></div></div>
+      <div class="qr-preview"><canvas aria-label="Generated QR code" data-qr-canvas></canvas></div>
+      <div class="data-stat-grid"><div><span>Characters</span><strong data-qr-characters>0</strong></div><div><span>Output</span><strong data-qr-output-size>512 px</strong></div></div>
+      <div class="data-action-row"><button type="button" class="button button-primary" data-download-png>{{ icon('download', 17) }} PNG</button><button type="button" class="button button-secondary" data-download-svg>SVG</button><button type="button" class="button button-secondary" data-copy-qr-text>{{ icon('copy', 17) }} Copy text</button></div>
+      <div class="data-error" data-tool-error hidden></div>
+    </aside>
+
+    {% elif tool.kind == 'json' %}
+    <section class="data-card">
+      <div class="card-heading"><div><span class="eyebrow">JSON input</span><h2>Paste a document</h2></div><button type="button" class="text-button" data-clear-input>{{ icon('trash', 16) }} Clear</button></div>
+      <label class="field-group data-textarea"><span class="sr-only">JSON input</span><textarea rows="16" data-json-input>{"project":"Ozzyl Tools","features":["format","validate","sort"],"active":true}</textarea></label>
+      <div class="data-option-row"><label><input type="checkbox" data-json-sort> Sort keys</label><label for="json-indent">Indent <select id="json-indent" data-json-indent><option value="2">2 spaces</option><option value="4">4 spaces</option></select></label></div>
+      <div class="data-action-row"><button type="button" class="button button-primary" data-json-format>Format</button><button type="button" class="button button-secondary" data-json-minify>Minify</button><button type="button" class="button button-secondary" data-json-validate>Validate</button></div>
+      <div class="data-error" data-tool-error hidden></div>
+    </section>
+    <aside class="data-result-card">
+      <div class="card-heading"><div><span class="eyebrow">Validated output</span><h2>Formatted JSON</h2></div></div>
+      <label class="field-group data-output"><span class="sr-only">JSON output</span><textarea rows="16" readonly data-json-output></textarea></label>
+      <div class="data-stat-grid"><div><span>Root type</span><strong data-json-stat="type">—</strong></div><div><span>Depth</span><strong data-json-stat="depth">0</strong></div><div><span>Keys</span><strong data-json-stat="keys">0</strong></div><div><span>Values</span><strong data-json-stat="values">0</strong></div></div>
+      <div class="data-action-row"><button type="button" class="button button-primary" data-copy-output>{{ icon('copy', 17) }} Copy</button><button type="button" class="button button-secondary" data-download-output>{{ icon('download', 17) }} JSON</button></div>
+      <div class="data-success" data-tool-success hidden></div>
+    </aside>
+
+    {% elif tool.kind == 'csv_json' %}
+    <section class="data-card">
+      <div class="card-heading"><div><span class="eyebrow">Data conversion</span><h2>Choose a direction</h2></div><button type="button" class="text-button" data-clear-input>{{ icon('trash', 16) }} Clear</button></div>
+      <div class="data-mode-row"><label><input type="radio" name="convert-mode" value="csv_to_json" checked data-convert-mode> CSV → JSON</label><label><input type="radio" name="convert-mode" value="json_to_csv" data-convert-mode> JSON → CSV</label></div>
+      <div class="data-form-grid"><div class="field-group"><label for="delimiter">Delimiter</label><select id="delimiter" data-delimiter><option value="auto">Auto-detect</option><option value=",">Comma</option><option value="\t">Tab</option><option value=";">Semicolon</option><option value="|">Pipe</option></select></div><div class="field-group"><label><input type="checkbox" checked data-header-row> First row is header</label></div></div>
+      <label class="field-group data-textarea"><span data-convert-input-label>CSV input</span><textarea rows="15" data-convert-input>name,email
+Amina,amina@example.com
+Rahim,rahim@example.com</textarea></label>
+      <button type="button" class="button button-primary button-full" data-convert-run>Convert data</button>
+      <div class="data-error" data-tool-error hidden></div>
+    </section>
+    <aside class="data-result-card">
+      <div class="card-heading"><div><span class="eyebrow">Converted output</span><h2 data-convert-output-title>JSON result</h2></div></div>
+      <label class="field-group data-output"><span class="sr-only">Converted output</span><textarea rows="15" readonly data-convert-output></textarea></label>
+      <div class="data-stat-grid"><div><span>Data rows</span><strong data-convert-rows>0</strong></div><div><span>Columns</span><strong data-convert-columns>0</strong></div></div>
+      <div class="data-action-row"><button type="button" class="button button-primary" data-copy-output>{{ icon('copy', 17) }} Copy</button><button type="button" class="button button-secondary" data-download-output>{{ icon('download', 17) }} Download</button></div>
+    </aside>
+
+    {% elif tool.kind == 'base64' %}
+    <section class="data-card">
+      <div class="card-heading"><div><span class="eyebrow">Text conversion</span><h2>Encode or decode</h2></div><button type="button" class="text-button" data-clear-input>{{ icon('trash', 16) }} Clear</button></div>
+      <div class="data-mode-row"><label><input type="radio" name="base64-mode" value="encode" checked data-base64-mode> Encode</label><label><input type="radio" name="base64-mode" value="decode" data-base64-mode> Decode</label></div>
+      <label class="field-group data-textarea"><span data-base64-input-label>Plain Unicode text</span><textarea rows="14" data-base64-input>Hello from Ozzyl Tools 👋</textarea></label>
+      <div class="data-option-row"><label><input type="checkbox" data-base64-url-safe> URL-safe alphabet</label><label><input type="checkbox" data-base64-no-padding> Omit padding</label></div>
+      <button type="button" class="button button-primary button-full" data-base64-run>Convert</button>
+      <div class="data-error" data-tool-error hidden></div>
+    </section>
+    <aside class="data-result-card">
+      <div class="card-heading"><div><span class="eyebrow">Result</span><h2 data-base64-output-title>Encoded Base64</h2></div></div>
+      <label class="field-group data-output"><span class="sr-only">Base64 output</span><textarea rows="14" readonly data-base64-output></textarea></label>
+      <div class="data-stat-grid"><div><span>Input</span><strong data-base64-input-count>0</strong></div><div><span>Output</span><strong data-base64-output-count>0</strong></div></div>
+      <div class="data-action-row"><button type="button" class="button button-primary" data-copy-output>{{ icon('copy', 17) }} Copy</button><button type="button" class="button button-secondary" data-download-output>{{ icon('download', 17) }} TXT</button></div>
+    </aside>
+
+    {% elif tool.kind == 'uuid' %}
+    <form class="data-card" data-uuid-form>
+      <div class="card-heading"><div><span class="eyebrow">Identifier options</span><h2>Generate UUID v4</h2></div><button type="button" class="text-button" data-reset-tool>{{ icon('reset', 16) }} Reset</button></div>
+      <div class="data-form-grid"><div class="field-group"><label for="uuid-quantity">Quantity</label><input id="uuid-quantity" type="number" min="1" max="100" value="10" data-uuid-quantity></div><div class="field-group"><label for="uuid-separator">Output</label><select id="uuid-separator" data-uuid-separator><option value="newline">New lines</option><option value="comma">Comma</option><option value="json">JSON array</option></select></div></div>
+      <div class="data-option-row"><label><input type="checkbox" data-uuid-uppercase> Uppercase</label><label><input type="checkbox" data-uuid-no-hyphens> Remove hyphens</label><label><input type="checkbox" data-uuid-braces> Add braces</label></div>
+      <button type="submit" class="button button-primary button-full">{{ icon('sparkles', 18) }} Generate UUIDs</button>
+    </form>
+    <aside class="data-result-card">
+      <div class="card-heading"><div><span class="eyebrow">Generated identifiers</span><h2>UUID results</h2></div></div>
+      <textarea class="uuid-list" readonly data-uuid-output></textarea>
+      <div class="data-stat-grid"><div><span>Generated</span><strong data-uuid-count>0</strong></div><div><span>Unique</span><strong data-uuid-unique>0</strong></div></div>
+      <div class="data-action-row"><button type="button" class="button button-primary" data-copy-output>{{ icon('copy', 17) }} Copy all</button><button type="button" class="button button-secondary" data-download-output>{{ icon('download', 17) }} TXT</button></div>
+      <div class="data-error" data-tool-error hidden></div>
+    </aside>
+
+    {% elif tool.kind == 'timestamp' %}
+    <section class="data-card">
+      <div class="card-heading"><div><span class="eyebrow">Unix to date</span><h2>Read a timestamp</h2></div><button type="button" class="text-button" data-use-current-time>{{ icon('clock', 16) }} Use now</button></div>
+      <div class="data-form-grid"><div class="field-group"><label for="timestamp-input">Unix timestamp</label><input id="timestamp-input" inputmode="numeric" value="1767225600" data-timestamp-input></div><div class="field-group"><label for="timestamp-unit">Unit</label><select id="timestamp-unit" data-timestamp-unit><option value="auto">Auto-detect</option><option value="seconds">Seconds</option><option value="milliseconds">Milliseconds</option></select></div></div>
+      <div class="card-heading"><div><span class="eyebrow">Date to Unix</span><h2>Convert a local date</h2></div></div>
+      <div class="field-group"><label for="date-input">Local date and time</label><input id="date-input" type="datetime-local" data-date-input></div>
+      <div class="data-error" data-tool-error hidden></div>
+    </section>
+    <aside class="data-result-card">
+      <div class="card-heading"><div><span class="eyebrow">Converted values</span><h2>Date details</h2></div></div>
+      <div class="timestamp-results"><div><span>UTC / ISO 8601</span><strong data-time-result="iso">—</strong></div><div><span>Your local time</span><strong data-time-result="local">—</strong></div><div><span>Relative time</span><strong data-time-result="relative">—</strong></div><div><span>Unix seconds</span><strong data-time-result="seconds">—</strong></div><div><span>Unix milliseconds</span><strong data-time-result="milliseconds">—</strong></div></div>
+      <div class="data-action-row"><button type="button" class="button button-primary" data-copy-timestamp>{{ icon('copy', 17) }} Copy details</button></div>
+    </aside>
+
+    {% elif tool.kind == 'regex' %}
+    <section class="data-card">
+      <div class="card-heading"><div><span class="eyebrow">Pattern</span><h2>Test a regular expression</h2></div><button type="button" class="text-button" data-clear-input>{{ icon('trash', 16) }} Clear</button></div>
+      <div class="field-group"><label for="regex-pattern">Pattern</label><input id="regex-pattern" value="\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b" data-regex-pattern></div>
+      <div class="data-option-row" aria-label="Regex flags"><label><input type="checkbox" value="g" checked data-regex-flag> global</label><label><input type="checkbox" value="i" checked data-regex-flag> ignore case</label><label><input type="checkbox" value="m" data-regex-flag> multiline</label><label><input type="checkbox" value="s" data-regex-flag> dotAll</label><label><input type="checkbox" value="u" checked data-regex-flag> Unicode</label></div>
+      <label class="field-group data-textarea"><span>Test text</span><textarea rows="11" data-regex-text>Contact sales@example.com or support@example.org for help.</textarea></label>
+      <div class="field-group"><label for="regex-replacement">Replacement template</label><input id="regex-replacement" placeholder="Optional, for example [email]" data-regex-replacement></div>
+      <p class="data-file-note">Runs in a separate browser worker and stops after one second.</p>
+      <div class="data-error" data-tool-error hidden></div>
+    </section>
+    <aside class="data-result-card">
+      <div class="card-heading"><div><span class="eyebrow">Matches</span><h2>Regex results</h2></div></div>
+      <div class="data-stat-grid"><div><span>Match count</span><strong data-regex-count>0</strong></div><div><span>Runtime</span><strong data-regex-runtime>—</strong></div></div>
+      <div class="regex-match-list" data-regex-matches></div>
+      <label class="field-group data-output"><span>Replacement preview</span><textarea rows="7" readonly data-regex-output></textarea></label>
+      <div class="data-action-row"><button type="button" class="button button-primary" data-copy-regex>{{ icon('copy', 17) }} Copy matches</button><button type="button" class="button button-secondary" data-download-output>{{ icon('download', 17) }} TXT</button></div>
+    </aside>
+    {% endif %}
+  </div>
+</section>
+
+<section class="section section-surface"><div class="container content-grid"><article class="prose-card"><span class="eyebrow">Local-first workflow</span><h2>Work with useful data without uploading it</h2><p>Inputs are processed by JavaScript in this browser. Review links and converted data before publishing, importing, or sharing them.</p><h3>Good practice</h3><ol><li>Avoid pasting secrets into any website.</li><li>Validate generated or converted output before production use.</li><li>Download a copy when you need an auditable record.</li></ol></article><aside class="prose-card callout-card"><span>{{ icon('shield', 22) }}</span><h2>Private by default</h2><p>No account, upload endpoint, or server-side processing is required.</p><a class="button button-primary button-full" href="#main-content">Use this tool</a></aside></div></section>
+
+<section class="section"><div class="container"><div class="section-heading"><span class="eyebrow">More data tools</span><h2>Continue with another local utility</h2></div><div class="tool-grid tool-grid-small">{% for related in related_tools %}<article class="tool-card tool-card-compact"><div class="tool-card-head"><span class="icon-tile">{{ icon(related.icon, 22) }}</span></div><div><span class="eyebrow">{{ related.category }}</span><h3><a href="{{ url_for(related.endpoint) }}">{{ related.short_name }}</a></h3></div><a class="card-link" href="{{ url_for(related.endpoint) }}">Open utility <span aria-hidden="true">→</span></a></article>{% endfor %}</div></div></section>
+{% endblock %}
+
+{% block scripts %}
+{% if tool.kind == 'qr' %}<script type="module" src="{{ url_for('static', filename='js/qr-tool.js') }}"></script>
+{% elif tool.kind == 'regex' %}<script type="module" src="{{ url_for('static', filename='js/regex-tool.js') }}"></script>
+{% else %}<script type="module" src="{{ url_for('static', filename='js/data-tools.js') }}"></script>{% endif %}
+{% endblock %}
