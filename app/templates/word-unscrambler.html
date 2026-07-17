@@ -14,8 +14,33 @@
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any",
   "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
-  "description": tool.summary
+  "description": tool.summary,
+  "dateModified": content_updated,
+  "isAccessibleForFree": true,
+  "publisher": {"@id": site_url + "#organization"}
 }|tojson }}</script>
+<script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": site_url + url_for('main.home')},
+    {"@type": "ListItem", "position": 2, "name": "Utilities", "item": site_url + url_for('main.home') + "#utilities"},
+    {"@type": "ListItem", "position": 3, "name": tool.name, "item": site_url + request.path}
+  ]
+}|tojson }}</script>
+<script type="application/ld+json" nonce="{{ g.csp_nonce }}">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for item in faq_items %}{
+      "@type": "Question",
+      "name": {{ item.question|tojson }},
+      "acceptedAnswer": {"@type": "Answer", "text": {{ item.answer|tojson }}}
+    }{% if not loop.last %},{% endif %}{% endfor %}
+  ]
+}
+</script>
 {% endblock %}
 
 {% block content %}
@@ -26,7 +51,7 @@
     </nav>
     <div class="tool-title-row">
       <span class="icon-tile icon-tile-large">{{ icon(tool.icon, 28) }}</span>
-      <div><span class="eyebrow">Writing utility</span><h1>{{ tool.name }}</h1><p>{{ tool.summary }}</p></div>
+      <div><span class="eyebrow">Free writing utility</span><h1>{{ tool.name }}</h1><p>{{ tool.summary }}</p><small>Last reviewed {{ content_updated }} · No account required</small></div>
     </div>
   </div>
 </section>
@@ -127,7 +152,14 @@
   </div>
 </section>
 
-<section class="section">
+<section class="section" aria-labelledby="word-faq-title">
+  <div class="container">
+    <div class="section-heading"><span class="eyebrow">Questions and answers</span><h2 id="word-faq-title">Word Unscrambler FAQ</h2></div>
+    <div class="content-grid">{% for item in faq_items %}<article class="prose-card"><h3>{{ item.question }}</h3><p>{{ item.answer }}</p></article>{% endfor %}</div>
+  </div>
+</section>
+
+<section class="section section-surface">
   <div class="container"><div class="section-heading"><span class="eyebrow">Keep working</span><h2>Related business tools</h2></div><div class="tool-grid tool-grid-small">{% for related in related_tools %}{{ tool_card(related, compact=true) }}{% endfor %}</div></div>
 </section>
 {% endblock %}
