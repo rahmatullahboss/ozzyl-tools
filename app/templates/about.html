@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import icon %}
+
+{% block structured_data %}
+<script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "About Ozzyl Tools",
+  "url": site_url + request.path,
+  "description": meta_description,
+  "dateModified": content_updated,
+  "isPartOf": {"@id": site_url + "#website"},
+  "about": {"@id": site_url + "#organization"}
+}|tojson }}</script>
+{% endblock %}
+
+{% block content %}
+<section class="page-hero">
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ url_for('main.home') }}">Home</a><span aria-hidden="true">/</span><span aria-current="page">About</span></nav>
+    <span class="eyebrow">About Ozzyl Tools</span>
+    <h1>Practical online tools built for speed, privacy, and clear decisions.</h1>
+    <p>Ozzyl Tools is a free collection of business calculators, PDF tools, document generators, data utilities, and writing tools. The goal is to help people finish common tasks without a complicated dashboard, forced sign-up, or hidden workflow.</p>
+  </div>
+</section>
+
+<section class="section"><div class="container content-grid"><article class="prose-card"><span class="eyebrow">What we build</span><h2>Small tools for real work</h2><p>Ozzyl Tools helps freelancers, small-business owners, online sellers, service providers, students, and operations teams calculate business figures, work with documents and files, and complete common browser-based tasks.</p><p>Each calculator explains its formula and assumptions. Supported file tools are designed to work locally in the browser. Document generators provide a live preview and local draft saving.</p></article><aside class="prose-card callout-card"><span>{{ icon('bolt', 22) }}</span><h2>Start without an account</h2><p>Open a tool, enter the values or choose a file, and get a useful result immediately.</p><a class="button button-primary button-full" href="{{ url_for('main.home') }}#calculators">Browse tools</a></aside></div></section>
+
+<section class="section section-surface" aria-labelledby="principles-title"><div class="container"><div class="section-heading centered-heading"><span class="eyebrow">Product principles</span><h2 id="principles-title">How Ozzyl Tools is designed</h2></div><div class="benefit-grid"><article><span>{{ icon('shield', 24) }}</span><h3>Privacy-first</h3><p>Calculator values, supported files, and document drafts are processed in the browser by default. Any future cloud feature must clearly explain when data is sent to a server.</p></article><article><span>{{ icon('info', 24) }}</span><h3>Transparent</h3><p>Formulas, assumptions, limitations, and local-rule warnings are shown near results. The tools provide practical estimates, not professional legal, tax, or accounting advice.</p></article><article><span>{{ icon('check', 24) }}</span><h3>Halal-friendly</h3><p>The public catalog excludes interest and usury calculations, mortgage-interest, debt-interest, compound-return tools, gambling, betting, adult content, intoxicants, and deceptive schemes.</p></article></div></div></section>
+
+<section class="section"><div class="container content-grid"><article class="prose-card"><span class="eyebrow">Content standards</span><h2>Useful before promotional</h2><p>Pages are written to answer the task directly: what the tool does, how it works, what the result means, and what should be verified. We avoid fabricated testimonials, invented statistics, misleading guarantees, keyword stuffing, and link schemes.</p><p>The current site review date is {{ content_updated }}.</p></article><article class="prose-card"><span class="eyebrow">Contact</span><h2>Report a problem or suggest a useful tool</h2><p>Found a calculation issue, accessibility problem, outdated explanation, or a clearly halal tool that would help your work? Send the details so the product can be improved.</p><a class="button button-secondary" href="mailto:{{ contact_email }}">Email {{ contact_email }}</a></article></div></section>
+{% endblock %}
