@@ -12,15 +12,22 @@ from .config import CONFIG_BY_NAME
 from .extensions import db, migrate
 
 
-def create_app(config_name: str | None = None, test_config: dict | None = None) -> Flask:
+def create_app(
+    config_name: str | None = None, test_config: dict | None = None
+) -> Flask:
     resolved_config = config_name or os.getenv("FLASK_ENV", "development")
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_object(CONFIG_BY_NAME.get(resolved_config, CONFIG_BY_NAME["development"]))
+    app.config.from_object(
+        CONFIG_BY_NAME.get(resolved_config, CONFIG_BY_NAME["development"])
+    )
 
     if test_config:
         app.config.update(test_config)
 
-    if resolved_config == "production" and app.config["SECRET_KEY"] == "dev-only-change-me":
+    if (
+        resolved_config == "production"
+        and app.config["SECRET_KEY"] == "dev-only-change-me"
+    ):
         raise RuntimeError("SECRET_KEY must be set in production.")
 
     Path(app.instance_path).mkdir(parents=True, exist_ok=True)
@@ -65,7 +72,9 @@ def register_request_hooks(app: Flask) -> None:
         nonce = getattr(g, "csp_nonce", "")
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
         response.headers.setdefault("X-Frame-Options", "DENY")
-        response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+        response.headers.setdefault(
+            "Referrer-Policy", "strict-origin-when-cross-origin"
+        )
         response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
         response.headers.setdefault(
             "Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()"
