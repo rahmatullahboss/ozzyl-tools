@@ -7,7 +7,11 @@
   <meta name="color-scheme" content="light dark">
   <title>{{ page_title }} · {{ site_name }}</title>
   <meta name="description" content="{{ meta_description }}">
-  {% if noindex %}<meta name="robots" content="noindex,nofollow">{% endif %}
+  {% if noindex %}
+  <meta name="robots" content="noindex,nofollow">
+  {% else %}
+  <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
+  {% endif %}
   <link rel="canonical" href="{{ site_url }}{{ request.path }}">
   <meta property="og:type" content="website">
   <meta property="og:title" content="{{ page_title }} · {{ site_name }}">
@@ -15,6 +19,8 @@
   <meta property="og:url" content="{{ site_url }}{{ request.path }}">
   <meta property="og:site_name" content="{{ site_name }}">
   <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="{{ page_title }} · {{ site_name }}">
+  <meta name="twitter:description" content="{{ meta_description }}">
   <meta name="theme-color" content="#2563eb">
   <link rel="manifest" href="{{ url_for('main.manifest') }}">
   <link rel="icon" href="{{ url_for('static', filename='img/app-icon.svg') }}" type="image/svg+xml">
@@ -23,40 +29,30 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='css/polish.css') }}">
   {% block styles %}{% endblock %}
   <script nonce="{{ g.csp_nonce }}">(function(){var t=localStorage.getItem('ozzyl-theme')||'auto';document.documentElement.dataset.theme=t;if(t==='dark'||(t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}})();</script>
-  {% block structured_data %}
   <script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {
     "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": site_name,
-    "url": site_url,
-    "description": meta_description
+    "@graph": [
+      {"@type": "Organization", "@id": site_url + "#organization", "name": site_name, "url": site_url, "email": contact_email},
+      {"@type": "WebSite", "@id": site_url + "#website", "name": site_name, "url": site_url, "description": "Free, privacy-first and halal-friendly online tools.", "publisher": {"@id": site_url + "#organization"}, "inLanguage": default_locale}
+    ]
   }|tojson }}</script>
-  {% endblock %}
+  {% block structured_data %}{% endblock %}
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
   <header class="site-header" data-site-header>
     <div class="container header-inner">
-      <a class="brand" href="{{ url_for('main.home') }}" aria-label="{{ site_name }} home">
-        <span class="brand-mark" aria-hidden="true">O</span>
-        <span>{{ site_name }}</span>
-      </a>
+      <a class="brand" href="{{ url_for('main.home') }}" aria-label="{{ site_name }} home"><span class="brand-mark" aria-hidden="true">O</span><span>{{ site_name }}</span></a>
       <nav class="desktop-nav" aria-label="Primary navigation">
         <a href="{{ url_for('main.home') }}#calculators">Calculators</a>
         <a href="{{ url_for('main.home') }}#utilities">Utilities</a>
         <a href="{{ url_for('main.home') }}#pdf-tools">PDF Tools</a>
         <a href="{{ url_for('main.home') }}#documents">Documents</a>
-        <a href="{{ url_for('main.home') }}#why-us">Why Ozzyl Tools</a>
+        <a href="{{ url_for('main.about') }}">About</a>
       </nav>
       <div class="header-actions">
-        <button class="icon-button" type="button" data-theme-toggle aria-label="Change color theme" aria-haspopup="menu">
-          <span class="theme-icon theme-icon-light">{{ icon('sun', 19) }}</span>
-          <span class="theme-icon theme-icon-dark">{{ icon('moon', 19) }}</span>
-        </button>
-        <button class="icon-button mobile-menu-button" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation menu">
-          <span data-menu-open>{{ icon('menu', 21) }}</span>
-          <span data-menu-close hidden>{{ icon('close', 21) }}</span>
-        </button>
+        <button class="icon-button" type="button" data-theme-toggle aria-label="Change color theme" aria-haspopup="menu"><span class="theme-icon theme-icon-light">{{ icon('sun', 19) }}</span><span class="theme-icon theme-icon-dark">{{ icon('moon', 19) }}</span></button>
+        <button class="icon-button mobile-menu-button" type="button" data-menu-toggle aria-expanded="false" aria-controls="mobile-menu" aria-label="Open navigation menu"><span data-menu-open>{{ icon('menu', 21) }}</span><span data-menu-close hidden>{{ icon('close', 21) }}</span></button>
       </div>
     </div>
     <div class="mobile-menu" id="mobile-menu" data-mobile-menu hidden>
@@ -65,44 +61,22 @@
         <a href="{{ url_for('main.home') }}#utilities">Utilities</a>
         <a href="{{ url_for('main.home') }}#pdf-tools">PDF tools</a>
         <a href="{{ url_for('main.home') }}#documents">Document generators</a>
+        <a href="{{ url_for('main.about') }}">About</a>
         <a href="{{ url_for('main.privacy') }}">Privacy</a>
         <a href="{{ url_for('main.terms') }}">Terms</a>
       </nav>
     </div>
   </header>
 
-  <main id="main-content" tabindex="-1">
-    {% block content %}{% endblock %}
-  </main>
+  <main id="main-content" tabindex="-1">{% block content %}{% endblock %}</main>
 
   <footer class="site-footer">
     <div class="container footer-grid">
-      <div>
-        <a class="brand brand-footer" href="{{ url_for('main.home') }}">
-          <span class="brand-mark" aria-hidden="true">O</span><span>{{ site_name }}</span>
-        </a>
-        <p>Fast, private business tools that help you calculate, create, and decide with confidence.</p>
-      </div>
-      <div>
-        <h2>Popular tools</h2>
-        <a href="{{ url_for('main.calculator', slug='profit-margin-calculator') }}">Profit margin</a>
-        <a href="{{ url_for('pdf_tools.merge_pdf') }}">Merge PDF</a>
-        <a href="{{ url_for('utility_tools.word_counter') }}">Word counter</a>
-        <a href="{{ url_for('utility_tools.percentage_calculator') }}">Percentage calculator</a>
-        <a href="{{ url_for('word_tools.word_unscrambler') }}">Word unscrambler</a>
-        <a href="{{ url_for('main.document_generator', document_type='invoice') }}">Invoice generator</a>
-      </div>
-      <div>
-        <h2>Company</h2>
-        <a href="{{ url_for('main.privacy') }}">Privacy</a>
-        <a href="{{ url_for('main.terms') }}">Terms</a>
-        <a href="mailto:{{ contact_email }}">Contact</a>
-      </div>
+      <div><a class="brand brand-footer" href="{{ url_for('main.home') }}"><span class="brand-mark" aria-hidden="true">O</span><span>{{ site_name }}</span></a><p>Fast, private and halal-friendly tools for practical business, PDF, data, and writing work.</p></div>
+      <div><h2>Popular tools</h2><a href="{{ url_for('main.calculator', slug='profit-margin-calculator') }}">Profit margin</a><a href="{{ url_for('pdf_tools.merge_pdf') }}">Merge PDF</a><a href="{{ url_for('utility_tools.word_counter') }}">Word counter</a><a href="{{ url_for('word_tools.word_unscrambler') }}">Word unscrambler</a><a href="{{ url_for('main.document_generator', document_type='invoice') }}">Invoice generator</a></div>
+      <div><h2>Company</h2><a href="{{ url_for('main.about') }}">About</a><a href="{{ url_for('main.privacy') }}">Privacy</a><a href="{{ url_for('main.terms') }}">Terms</a><a href="mailto:{{ contact_email }}">Contact</a></div>
     </div>
-    <div class="container footer-bottom">
-      <span>© {{ current_year }} {{ site_name }}</span>
-      <span>Built for speed, privacy, and clarity.</span>
-    </div>
+    <div class="container footer-bottom"><span>© {{ current_year }} {{ site_name }}</span><span>Content reviewed {{ content_updated }}.</span></div>
   </footer>
 
   <div class="toast-region" aria-live="polite" aria-atomic="true" data-toast-region></div>

@@ -15,11 +15,9 @@ from flask import (
 )
 from sqlalchemy import text
 
-from .advanced_tools import ADVANCED_CALCULATOR_TOOLS
-from .catalog import CATEGORIES, DOCUMENT_TYPES, TOOLS, TOOLS_BY_SLUG
 from .extensions import db
-from .finance_tools import FINANCE_TOOLS
 from .growth_tools import GROWTH_TOOLS
+from .halal_catalog import CATEGORIES, DOCUMENT_TYPES, TOOLS, TOOLS_BY_SLUG
 from .pdf_convert import PDF_CONVERT_TOOLS
 from .pdf_lab import PDF_LAB_TOOLS
 from .pdf_markup import PDF_MARKUP_TOOLS
@@ -27,6 +25,45 @@ from .pdf_tools import PDF_TOOLS
 from .utility_tools import UTILITY_TOOLS
 
 bp = Blueprint("main", __name__)
+CONTENT_UPDATED = "2026-07-17"
+
+
+def calculator_faq(tool: dict) -> list[dict[str, str]]:
+    return [
+        {
+            "question": f"What does the {tool['name']} calculate?",
+            "answer": tool["summary"],
+        },
+        {
+            "question": f"How is the {tool['short_name']} result calculated?",
+            "answer": f"{tool['formula_text']} The result updates when an input changes.",
+        },
+        {
+            "question": f"Is the {tool['name']} free and private?",
+            "answer": (
+                "Yes. It is free without an account, and the values are calculated "
+                "and saved locally in your browser."
+            ),
+        },
+    ]
+
+
+def document_faq(document: dict) -> list[dict[str, str]]:
+    noun = document["noun"].lower()
+    return [
+        {
+            "question": f"Can I create a {noun} without signing up?",
+            "answer": f"Yes. The {document['name']} works without an account and saves the draft in your browser.",
+        },
+        {
+            "question": f"Can I export the {noun} as a PDF?",
+            "answer": "Yes. Use Print / PDF and choose your browser's Save as PDF option.",
+        },
+        {
+            "question": f"Does the {noun} support currencies and tax rates?",
+            "answer": "Yes. You can choose a currency, enter line-level tax, add discounts, and include transparent shipping or service fees.",
+        },
+    ]
 
 
 @bp.app_context_processor
@@ -40,18 +77,34 @@ def inject_globals() -> dict:
         "categories": CATEGORIES,
         "document_types": DOCUMENT_TYPES,
         "default_locale": current_app.config["DEFAULT_LOCALE"],
+        "content_updated": CONTENT_UPDATED,
     }
 
 
 @bp.get("/")
 def home():
+    home_faq = [
+        {
+            "question": "Are Ozzyl Tools free to use?",
+            "answer": "Yes. Core calculators, utilities, PDF tools, and document generators are free and do not require an account.",
+        },
+        {
+            "question": "Do Ozzyl Tools upload my data?",
+            "answer": "Calculator values, document drafts, and supported file workflows are processed locally in your browser by default.",
+        },
+        {
+            "question": "Does Ozzyl Tools include interest calculators?",
+            "answer": "No. The public catalog excludes interest, usury, mortgage-interest, debt-interest, and compound-return calculators.",
+        },
+    ]
     return render_template(
         "home.html",
-        page_title="Free Business Calculators & Workflow Tools",
+        page_title="Free Business Calculators, PDF Tools & Utilities",
         meta_description=(
-            "Fast, private business calculators, advanced financial analysis, PDF tools, and "
+            "Free, private and halal-friendly business calculators, PDF tools, utilities, and "
             "professional document generators. No sign-up required."
         ),
+        home_faq=home_faq,
     )
 
 
@@ -75,6 +128,7 @@ def calculator(slug: str):
         "calculator.html",
         tool=tool,
         related_tools=related[:3],
+        faq_items=calculator_faq(tool),
         page_title=tool["name"],
         meta_description=tool["summary"],
     )
@@ -89,6 +143,7 @@ def document_generator(document_type: str):
         "document.html",
         document_type=document_type,
         document=config,
+        faq_items=document_faq(config),
         page_title=config["name"],
         meta_description=config["summary"],
     )
@@ -104,6 +159,18 @@ def quotation_alias():
     return document_generator("quotation")
 
 
+@bp.get("/about/")
+def about():
+    return render_template(
+        "about.html",
+        page_title="About Ozzyl Tools",
+        meta_description=(
+            "Learn how Ozzyl Tools builds free, privacy-first and halal-friendly online tools "
+            "for practical business, PDF, data, and writing tasks."
+        ),
+    )
+
+
 @bp.get("/privacy/")
 def privacy():
     return render_template(
@@ -113,23 +180,22 @@ def privacy():
         sections=[
             (
                 "Local-first tools",
-                "Calculator inputs and document drafts are processed and saved in your browser by default. "
-                "They are not sent to our server unless a future cloud feature clearly asks you to sign in and save them.",
+                "Calculator inputs, files, and document drafts are processed and saved in your browser by default. They are not sent to our server unless a future cloud feature clearly asks you to sign in and save them.",
             ),
             (
                 "Technical data",
                 "Standard server logs may include IP address, browser type, requested page, and timestamp for security and reliability.",
             ),
             (
-                "Future analytics and advertising",
-                "Analytics, advertising, or affiliate services will only be added with updated disclosure and any consent controls required by law.",
+                "Future analytics",
+                "Privacy-conscious analytics will only be added with updated disclosure and any consent controls required by law.",
             ),
             (
                 "Your choices",
                 "You can clear saved drafts, recent tools, favorites, and theme preferences from your browser storage at any time.",
             ),
         ],
-        meta_description="How Ozzyl Tools handles calculator inputs, local drafts, and technical data.",
+        meta_description="How Ozzyl Tools handles calculator inputs, local drafts, files, and technical data.",
     )
 
 
@@ -153,7 +219,7 @@ def terms():
                 "We may improve, replace, or discontinue tools. We do not guarantee uninterrupted availability or suitability for a specific purpose.",
             ),
         ],
-        meta_description="Terms for using Ozzyl Tools calculators and document generators.",
+        meta_description="Terms for using Ozzyl Tools calculators, utilities, PDF tools, and document generators.",
     )
 
 
@@ -161,8 +227,6 @@ def terms():
 def sitemap():
     urls = [url_for("main.home", _external=True)]
     urls.extend(url_for("main.calculator", slug=tool["slug"], _external=True) for tool in TOOLS)
-    urls.extend(url_for(tool["endpoint"], _external=True) for tool in ADVANCED_CALCULATOR_TOOLS)
-    urls.extend(url_for(tool["endpoint"], _external=True) for tool in FINANCE_TOOLS)
     urls.extend(url_for(tool["endpoint"], _external=True) for tool in GROWTH_TOOLS)
     urls.extend(url_for(tool["endpoint"], _external=True) for tool in UTILITY_TOOLS)
     urls.extend(url_for(tool["endpoint"], _external=True) for tool in PDF_TOOLS)
@@ -176,18 +240,74 @@ def sitemap():
     )
     urls.extend(
         [
+            url_for("main.about", _external=True),
             url_for("main.privacy", _external=True),
             url_for("main.terms", _external=True),
         ]
     )
-    body = render_template("sitemap.xml", urls=urls)
+    body = render_template("sitemap.xml", urls=urls, lastmod=CONTENT_UPDATED)
     return Response(body, mimetype="application/xml")
 
 
 @bp.get("/robots.txt")
 def robots():
-    body = f"User-agent: *\nAllow: /\nSitemap: {url_for('main.sitemap', _external=True)}\n"
+    sitemap_url = url_for("main.sitemap", _external=True)
+    body = (
+        "User-agent: *\nAllow: /\n\n"
+        "User-agent: GPTBot\nAllow: /\n\n"
+        "User-agent: ChatGPT-User\nAllow: /\n\n"
+        "User-agent: ClaudeBot\nAllow: /\n\n"
+        "User-agent: PerplexityBot\nAllow: /\n\n"
+        "User-agent: Google-Extended\nAllow: /\n\n"
+        f"Sitemap: {sitemap_url}\n"
+    )
     return Response(body, mimetype="text/plain")
+
+
+@bp.get("/llms.txt")
+def llms_txt():
+    lines = [
+        "# Ozzyl Tools",
+        "",
+        "> Free, privacy-first and halal-friendly online tools for business, PDF, data, and writing tasks.",
+        "",
+        "## Core pages",
+        f"- [Home]({url_for('main.home', _external=True)}): Browse the public tool directory.",
+        f"- [About]({url_for('main.about', _external=True)}): Product principles, privacy model, and content standards.",
+        f"- [Word Unscrambler]({url_for('word_tools.word_unscrambler', _external=True)}): Find anagrams and shorter English words.",
+        "",
+        "## Business calculators",
+    ]
+    lines.extend(
+        f"- [{tool['name']}]({url_for('main.calculator', slug=tool['slug'], _external=True)}): {tool['summary']}"
+        for tool in TOOLS
+    )
+    lines.extend(["", "## Business growth calculators"])
+    lines.extend(
+        f"- [{tool['name']}]({url_for(tool['endpoint'], _external=True)}): {tool['summary']}"
+        for tool in GROWTH_TOOLS
+    )
+    lines.extend(["", "## Utilities"])
+    lines.extend(
+        f"- [{tool['name']}]({url_for(tool['endpoint'], _external=True)}): {tool['summary']}"
+        for tool in UTILITY_TOOLS
+    )
+    lines.extend(["", "## Document generators"])
+    lines.extend(
+        f"- [{document['name']}]({url_for('main.document_generator', document_type=kind, _external=True)}): {document['summary']}"
+        for kind, document in DOCUMENT_TYPES.items()
+    )
+    lines.extend(
+        [
+            "",
+            "## Usage notes",
+            "- Core tools are free and do not require an account.",
+            "- Inputs, drafts, and supported files stay in the browser by default.",
+            "- The public catalog excludes interest, usury, mortgage-interest, debt-interest, and compound-return calculators.",
+            f"- Content last reviewed: {CONTENT_UPDATED}.",
+        ]
+    )
+    return Response("\n".join(lines) + "\n", mimetype="text/plain")
 
 
 @bp.get("/manifest.webmanifest")
@@ -196,7 +316,7 @@ def manifest():
         {
             "name": current_app.config["SITE_NAME"],
             "short_name": "Ozzyl Tools",
-            "description": "Private, fast business calculators and document generators.",
+            "description": "Private, fast and halal-friendly online tools.",
             "start_url": "/",
             "display": "standalone",
             "background_color": "#f8fafc",

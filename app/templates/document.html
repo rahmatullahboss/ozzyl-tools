@@ -1,10 +1,46 @@
 {% extends 'base.html' %}
 {% from 'macros.html' import icon %}
 
-{% block structured_data %}<script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {"@context":"https://schema.org","@type":"WebApplication","name":document.name,"applicationCategory":"BusinessApplication","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"description":document.summary,"url":site_url+request.path}|tojson }}</script>{% endblock %}
+{% block structured_data %}
+<script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": document.name,
+  "applicationCategory": "BusinessApplication",
+  "operatingSystem": "Any",
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
+  "description": document.summary,
+  "url": site_url + request.path,
+  "dateModified": content_updated,
+  "isAccessibleForFree": true,
+  "publisher": {"@id": site_url + "#organization"}
+}|tojson }}</script>
+<script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": site_url + url_for('main.home')},
+    {"@type": "ListItem", "position": 2, "name": "Document generators", "item": site_url + url_for('main.home') + "#documents"},
+    {"@type": "ListItem", "position": 3, "name": document.name, "item": site_url + request.path}
+  ]
+}|tojson }}</script>
+<script type="application/ld+json" nonce="{{ g.csp_nonce }}">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for item in faq_items %}{
+      "@type": "Question",
+      "name": {{ item.question|tojson }},
+      "acceptedAnswer": {"@type": "Answer", "text": {{ item.answer|tojson }}}
+    }{% if not loop.last %},{% endif %}{% endfor %}
+  ]
+}
+</script>
+{% endblock %}
 
 {% block content %}
-<section class="page-hero page-hero-compact"><div class="container"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ url_for('main.home') }}">Home</a><span>/</span><a href="{{ url_for('main.home') }}#documents">Documents</a><span>/</span><span aria-current="page">{{ document.noun }}</span></nav><div class="tool-title-row"><span class="icon-tile icon-tile-large">{{ icon(document.icon, 28) }}</span><div><span class="eyebrow">Free document generator</span><h1>{{ document.name }}</h1><p>{{ document.summary }}</p></div></div></div></section>
+<section class="page-hero page-hero-compact"><div class="container"><nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ url_for('main.home') }}">Home</a><span>/</span><a href="{{ url_for('main.home') }}#documents">Documents</a><span>/</span><span aria-current="page">{{ document.noun }}</span></nav><div class="tool-title-row"><span class="icon-tile icon-tile-large">{{ icon(document.icon, 28) }}</span><div><span class="eyebrow">Free document generator</span><h1>{{ document.name }}</h1><p>{{ document.summary }}</p><small>Last reviewed {{ content_updated }} · No account required</small></div></div></div></section>
 
 <section class="document-workspace" data-document-app data-document-type="{{ document_type }}" data-prefix="{{ document.prefix }}">
   <div class="container document-toolbar">
@@ -56,6 +92,17 @@
       </div>
     </aside>
   </div>
+</section>
+
+<section class="section section-surface" aria-labelledby="document-guide-title">
+  <div class="container content-grid">
+    <article class="prose-card"><span class="eyebrow">How to use it</span><h2 id="document-guide-title">Create a clear {{ document.noun|lower }} in four steps</h2><ol><li>Add your business and customer or supplier details.</li><li>Choose dates, document number, and currency.</li><li>Add products or services with quantity, rate, and applicable tax.</li><li>Review the live preview, then print or save as PDF.</li></ol><p>The draft stays in this browser by default. Review every amount, tax rule, payment instruction, and legal requirement before sending the document.</p></article>
+    <aside class="prose-card callout-card"><span>{{ icon('lock', 22) }}</span><h2>Private by default</h2><p>Your draft is saved locally. You can download a JSON backup and restore it later on a trusted device.</p><a class="button button-secondary button-full" href="{{ url_for('main.privacy') }}">Read the privacy policy</a></aside>
+  </div>
+</section>
+
+<section class="section" aria-labelledby="document-faq-title">
+  <div class="container"><div class="section-heading"><span class="eyebrow">Questions and answers</span><h2 id="document-faq-title">{{ document.name }} FAQ</h2></div><div class="content-grid">{% for item in faq_items %}<article class="prose-card"><h3>{{ item.question }}</h3><p>{{ item.answer }}</p></article>{% endfor %}</div></div>
 </section>
 {% endblock %}
 

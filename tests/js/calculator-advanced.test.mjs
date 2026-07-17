@@ -3,31 +3,9 @@ import assert from "node:assert/strict";
 
 import {
   buildBreakEvenProjection,
-  buildCompoundProjection,
-  buildLoanSchedule,
   buildSensitivity,
-  calculate,
   csvEscape,
 } from "../../app/static/js/calculator.js";
-
-test("extra loan payments reduce payoff time and interest", () => {
-  const base = buildLoanSchedule({ principal: 10000, annual_rate: 10, months: 24 });
-  const faster = buildLoanSchedule(
-    { principal: 10000, annual_rate: 10, months: 24 },
-    100,
-  );
-  assert.ok(faster.payoffMonths < base.payoffMonths);
-  assert.ok(faster.totalInterest < base.totalInterest);
-  assert.equal(faster.rows.at(-1).balance, 0);
-});
-
-test("compound projection agrees with the calculator result", () => {
-  const values = { principal: 1000, monthly: 100, annual_rate: 6, years: 3 };
-  const projection = buildCompoundProjection(values);
-  const result = calculate("compound_growth", values);
-  assert.equal(projection.length, 3);
-  assert.ok(Math.abs(projection.at(-1).endingBalance - result.future) < 0.000001);
-});
 
 test("break-even projection includes the break-even volume", () => {
   const rows = buildBreakEvenProjection({ fixed: 5000, price: 50, variable: 30 });

@@ -39,14 +39,6 @@ export const calculators = {
     const units = contribution > 0 ? Math.ceil(fixed / contribution) : 0;
     return { units, revenue: units * price, contribution };
   },
-  loan: ({ principal, annual_rate, months }) => {
-    const schedule = buildLoanSchedule({ principal, annual_rate, months });
-    return {
-      monthly: schedule.scheduledPayment,
-      total: schedule.totalPaid,
-      interest: schedule.totalInterest,
-    };
-  },
   overtime: ({ hourly, regular_hours, overtime_hours, multiplier }) => ({
     regular: hourly * regular_hours,
     overtime: hourly * overtime_hours * multiplier,
@@ -73,19 +65,6 @@ export const calculators = {
       coverage: daily_usage > 0 ? safety_stock / daily_usage : 0,
     };
   },
-  compound_growth: ({ principal, monthly, annual_rate, years }) => {
-    const projection = buildCompoundProjection({
-      principal,
-      monthly,
-      annual_rate,
-      years,
-    });
-    const final = projection.at(-1);
-    const periods = Math.max(0, Math.round(years * 12));
-    const future = final?.endingBalance ?? principal;
-    const contributed = principal + monthly * periods;
-    return { future, contributed, growth: future - contributed };
-  },
   unit_economics: ({ revenue, variable_cost, cac }) => {
     const contribution = revenue - variable_cost;
     return {
@@ -102,87 +81,6 @@ export function calculate(formula, values) {
   return Object.fromEntries(
     Object.entries(handler(values)).map(([key, value]) => [key, finite(value)]),
   );
-}
-
-export function buildLoanSchedule(
-  { principal, annual_rate, months },
-  extraPayment = 0,
-) {
-  const openingPrincipal = Math.max(0, Number(principal) || 0);
-  const term = Math.max(1, Math.round(Number(months) || 1));
-  const monthlyRate = Math.max(0, percent(Number(annual_rate) || 0) / 12);
-  const scheduledPayment =
-    monthlyRate === 0
-      ? openingPrincipal / term
-      : (openingPrincipal * monthlyRate * (1 + monthlyRate) ** term) /
-        ((1 + monthlyRate) ** term - 1);
-  const payment = scheduledPayment + Math.max(0, Number(extraPayment) || 0);
-  const rows = [];
-  let balance = openingPrincipal;
-  let totalInterest = 0;
-  let totalPaid = 0;
-  const maximumPeriods = Math.max(term * 5, 1200);
-
-  for (let month = 1; balance > 0.005 && month <= maximumPeriods; month += 1) {
-    const interest = balance * monthlyRate;
-    const principalPaid = Math.min(balance, Math.max(0, payment - interest));
-    if (principalPaid <= 0 && balance > 0) {
-      throw new Error("The payment is not high enough to reduce the loan balance.");
-    }
-    const actualPayment = interest + principalPaid;
-    balance = Math.max(0, balance - principalPaid);
-    totalInterest += interest;
-    totalPaid += actualPayment;
-    rows.push({
-      month,
-      payment: actualPayment,
-      principal: principalPaid,
-      interest,
-      balance,
-    });
-  }
-
-  return {
-    scheduledPayment,
-    payment,
-    rows,
-    totalInterest,
-    totalPaid,
-    payoffMonths: rows.length,
-  };
-}
-
-export function buildCompoundProjection({ principal, monthly, annual_rate, years }) {
-  const initial = Math.max(0, Number(principal) || 0);
-  const contribution = Number(monthly) || 0;
-  const periods = Math.max(0, Math.round((Number(years) || 0) * 12));
-  const monthlyRate = percent(Number(annual_rate) || 0) / 12;
-  const rows = [];
-  let balance = initial;
-  let yearStart = balance;
-  let yearContributions = 0;
-  let yearGrowth = 0;
-
-  for (let month = 1; month <= periods; month += 1) {
-    const growth = balance * monthlyRate;
-    balance += growth + contribution;
-    yearGrowth += growth;
-    yearContributions += contribution;
-    if (month % 12 === 0 || month === periods) {
-      rows.push({
-        year: Math.ceil(month / 12),
-        startingBalance: yearStart,
-        contributions: yearContributions,
-        growth: yearGrowth,
-        endingBalance: balance,
-      });
-      yearStart = balance;
-      yearContributions = 0;
-      yearGrowth = 0;
-    }
-  }
-
-  return rows;
 }
 
 export function buildBreakEvenProjection({ fixed, price, variable }) {
@@ -391,7 +289,6 @@ function initCalculator(root) {
   const projectionCard = root.querySelector("[data-projection-card]");
   const projectionTable = root.querySelector("[data-projection-table]");
   const projectionSummary = root.querySelector("[data-projection-summary]");
-  const loanExtra = root.querySelector("[data-loan-extra-payment]");
 
   const scenarioValues = () =>
     Object.fromEntries(
@@ -461,40 +358,7 @@ function initCalculator(root) {
     let rows = [];
     let summary = "";
 
-    if (formula === "loan") {
-      const base = buildLoanSchedule(latestValues, 0);
-      const schedule = buildLoanSchedule(
-        latestValues,
-        Number(loanExtra?.value) || 0,
-      );
-      headers = ["Month", "Payment", "Principal", "Interest", "Balance"];
-      rows = schedule.rows.map((row) => [
-        row.month,
-        money(row.payment),
-        money(row.principal),
-        money(row.interest),
-        money(row.balance),
-      ]);
-      const monthsSaved = Math.max(0, base.payoffMonths - schedule.payoffMonths);
-      const interestSaved = Math.max(
-        0,
-        base.totalInterest - schedule.totalInterest,
-      );
-      summary = `${schedule.payoffMonths} months to payoff · ${money(schedule.totalInterest)} total interest · ${monthsSaved} months and ${money(interestSaved)} saved`;
-    } else if (formula === "compound_growth") {
-      const projection = buildCompoundProjection(latestValues);
-      headers = ["Year", "Starting", "Contributions", "Growth", "Ending"];
-      rows = projection.map((row) => [
-        row.year,
-        money(row.startingBalance),
-        money(row.contributions),
-        money(row.growth),
-        money(row.endingBalance),
-      ]);
-      summary = projection.length
-        ? `${projection.length}-year growth projection ending at ${money(projection.at(-1).endingBalance)}`
-        : "Enter a positive time period to generate a projection.";
-    } else if (formula === "break_even") {
+    if (formula === "break_even") {
       const projection = buildBreakEvenProjection(latestValues);
       headers = ["Units", "Revenue", "Total cost", "Profit / loss"];
       rows = projection.map((row) => [
@@ -612,7 +476,6 @@ function initCalculator(root) {
     if (scenarioPanel) scenarioPanel.hidden = !scenarioToggle.checked;
     renderScenario();
   });
-  loanExtra?.addEventListener("input", renderProjection);
   root.querySelector("[data-export-analysis]")?.addEventListener("click", exportCsv);
 
   update();
@@ -624,7 +487,6 @@ function initCalculator(root) {
     if (scenarioToggle) scenarioToggle.checked = false;
     if (scenarioPanel) scenarioPanel.hidden = true;
     if (scenarioTable) scenarioTable.hidden = true;
-    if (loanExtra) loanExtra.value = "0";
     localStorage.removeItem(storageKey(slug));
     history.replaceState(null, "", location.pathname);
     update();

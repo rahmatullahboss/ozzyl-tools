@@ -31,8 +31,6 @@ def create_app(config_name: str | None = None, test_config: dict | None = None) 
 
     # Import models after the extension is initialized so Alembic sees metadata.
     from . import models  # noqa: F401
-    from .advanced_tools import bp as advanced_tools_bp
-    from .finance_tools import bp as finance_tools_bp
     from .growth_tools import bp as growth_tools_bp
     from .pdf_convert import bp as pdf_convert_bp
     from .pdf_lab import bp as pdf_lab_bp
@@ -44,8 +42,6 @@ def create_app(config_name: str | None = None, test_config: dict | None = None) 
 
     app.register_blueprint(word_tools_bp)
     app.register_blueprint(utility_tools_bp)
-    app.register_blueprint(advanced_tools_bp)
-    app.register_blueprint(finance_tools_bp)
     app.register_blueprint(growth_tools_bp)
     app.register_blueprint(pdf_tools_bp)
     app.register_blueprint(pdf_lab_bp)
