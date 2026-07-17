@@ -11,6 +11,10 @@ def test_home_is_accessible_and_secure(client):
     assert b"Free online tools that turn daily work" in response.data
     assert b"FAQPage" in response.data
     assert b"Organization" in response.data
+    assert b"ContactPoint" in response.data
+    assert b'id="report-problem"' in response.data
+    assert b"Report%20a%20problem%20on%20Ozzyl%20Tools" in response.data
+    assert b"Tool%20suggestion%20for%20Ozzyl%20Tools" in response.data
     assert response.headers["X-Content-Type-Options"] == "nosniff"
     assert response.headers["X-Frame-Options"] == "DENY"
     csp = response.headers["Content-Security-Policy"]
