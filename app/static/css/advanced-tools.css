@@ -1,0 +1,18 @@
+.advanced-hero{background:linear-gradient(135deg,var(--surface,#fff),color-mix(in srgb,var(--primary,#2563eb) 9%,var(--surface,#fff)))}
+.advanced-private-badge{display:inline-flex;align-items:center;gap:.45rem;border:1px solid var(--border);border-radius:999px;padding:.55rem .8rem;font-size:.85rem;font-weight:700;white-space:nowrap}
+.advanced-calculator-layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);gap:1.5rem;align-items:start}
+.advanced-input-card,.advanced-result-card,.advanced-chart-card,.advanced-table-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow-sm);padding:1.35rem}
+.advanced-result-card{position:sticky;top:6rem}
+.advanced-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin-top:1.1rem}
+.field-group-wide{grid-column:1/-1}
+.field-group textarea{width:100%;resize:vertical;min-height:7rem;border:1px solid var(--border);border-radius:.75rem;background:var(--surface);color:var(--text);padding:.8rem;font:inherit}
+.advanced-stress-card{margin-top:1rem;padding:1rem;border:1px solid var(--border);border-radius:1rem;background:var(--surface-subtle)}
+.advanced-stress-card>div,.advanced-stress-card label,.advanced-stress-card p{display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.advanced-stress-card label{font-size:.88rem;margin:.85rem 0 .35rem}.advanced-stress-card output{font-weight:800}.advanced-stress-card input{width:100%}.advanced-stress-card p{margin:.8rem 0 0;padding-top:.8rem;border-top:1px solid var(--border);font-size:.9rem}.advanced-stress-card p strong{text-align:right}
+.advanced-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.advanced-actions .button{justify-content:center}
+.advanced-analysis-grid{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:1.25rem}
+.advanced-chart-card{min-height:320px;display:flex;align-items:center}.advanced-chart-card>div{width:100%}.advanced-chart-card svg{display:block;width:100%;height:auto;overflow:visible}.advanced-chart-axis{stroke:var(--border);stroke-width:2}.advanced-chart-line{fill:none;stroke:var(--primary);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}.advanced-chart-point{fill:var(--surface);stroke:var(--primary);stroke-width:3}
+.advanced-table-scroll{overflow:auto;max-height:390px}.advanced-table-card table{width:100%;border-collapse:collapse;font-size:.9rem}.advanced-table-card th,.advanced-table-card td{padding:.75rem;text-align:right;border-bottom:1px solid var(--border);white-space:nowrap}.advanced-table-card th:first-child,.advanced-table-card td:first-child{text-align:left}.advanced-table-card thead{position:sticky;top:0;background:var(--surface);z-index:1}
+@media(max-width:900px){.advanced-calculator-layout,.advanced-analysis-grid{grid-template-columns:1fr}.advanced-result-card{position:static}.advanced-form-grid{grid-template-columns:1fr}.field-group-wide{grid-column:auto}}
+@media(max-width:560px){.advanced-input-card,.advanced-result-card,.advanced-chart-card,.advanced-table-card{padding:1rem}.advanced-actions{grid-template-columns:1fr}.advanced-private-badge{display:none}}
+@media print{.site-header,.site-footer,.breadcrumbs,.advanced-actions,.advanced-stress-card,.section-cta{display:none!important}.advanced-calculator-layout,.advanced-analysis-grid{grid-template-columns:1fr}.advanced-result-card{position:static}.advanced-input-card,.advanced-result-card,.advanced-chart-card,.advanced-table-card{box-shadow:none;break-inside:avoid}}

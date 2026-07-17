@@ -12,15 +12,22 @@ from .config import CONFIG_BY_NAME
 from .extensions import db, migrate
 
 
-def create_app(config_name: str | None = None, test_config: dict | None = None) -> Flask:
+def create_app(
+    config_name: str | None = None, test_config: dict | None = None
+) -> Flask:
     resolved_config = config_name or os.getenv("FLASK_ENV", "development")
     app = Flask(__name__, instance_relative_config=True)
-    app.config.from_object(CONFIG_BY_NAME.get(resolved_config, CONFIG_BY_NAME["development"]))
+    app.config.from_object(
+        CONFIG_BY_NAME.get(resolved_config, CONFIG_BY_NAME["development"])
+    )
 
     if test_config:
         app.config.update(test_config)
 
-    if resolved_config == "production" and app.config["SECRET_KEY"] == "dev-only-change-me":
+    if (
+        resolved_config == "production"
+        and app.config["SECRET_KEY"] == "dev-only-change-me"
+    ):
         raise RuntimeError("SECRET_KEY must be set in production.")
 
     Path(app.instance_path).mkdir(parents=True, exist_ok=True)
@@ -31,6 +38,8 @@ def create_app(config_name: str | None = None, test_config: dict | None = None) 
 
     # Import models after the extension is initialized so Alembic sees metadata.
     from . import models  # noqa: F401
+    from .advanced_tools import bp as advanced_tools_bp
+    from .pdf_lab import bp as pdf_lab_bp
     from .pdf_tools import bp as pdf_tools_bp
     from .routes import bp
     from .utility_tools import bp as utility_tools_bp
@@ -38,7 +47,9 @@ def create_app(config_name: str | None = None, test_config: dict | None = None) 
 
     app.register_blueprint(word_tools_bp)
     app.register_blueprint(utility_tools_bp)
+    app.register_blueprint(advanced_tools_bp)
     app.register_blueprint(pdf_tools_bp)
+    app.register_blueprint(pdf_lab_bp)
     app.register_blueprint(bp)
     register_request_hooks(app)
     register_error_handlers(app)
@@ -57,7 +68,9 @@ def register_request_hooks(app: Flask) -> None:
         nonce = getattr(g, "csp_nonce", "")
         response.headers.setdefault("X-Content-Type-Options", "nosniff")
         response.headers.setdefault("X-Frame-Options", "DENY")
-        response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+        response.headers.setdefault(
+            "Referrer-Policy", "strict-origin-when-cross-origin"
+        )
         response.headers.setdefault("Cross-Origin-Opener-Policy", "same-origin")
         response.headers.setdefault(
             "Permissions-Policy", "camera=(), microphone=(), geolocation=(), payment=()"
@@ -122,7 +135,9 @@ def register_error_handlers(app: Flask) -> None:
 def configure_logging(app: Flask) -> None:
     if not app.debug:
         handler = logging.StreamHandler()
-        handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s"))
+        handler.setFormatter(
+            logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s")
+        )
         handler.setLevel(logging.INFO)
         app.logger.addHandler(handler)
         app.logger.setLevel(logging.INFO)

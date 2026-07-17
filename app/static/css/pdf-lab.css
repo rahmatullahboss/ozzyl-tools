@@ -1,0 +1,6 @@
+.pdf-lab-hero{background:linear-gradient(135deg,var(--surface,#fff),color-mix(in srgb,var(--primary,#2563eb) 8%,var(--surface,#fff)))}
+.pdf-lab-fieldset{border:1px solid var(--border);border-radius:1rem;padding:1rem;margin:1rem 0}.pdf-lab-fieldset legend{padding:0 .4rem;font-weight:800;font-size:.9rem}
+.pdf-lab-four-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.8rem}.pdf-lab-metadata-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:1rem 0}.pdf-lab-metadata-grid .field-group-wide{grid-column:1/-1}.pdf-lab-metadata-grid textarea{width:100%;resize:vertical;border:1px solid var(--border);border-radius:.75rem;background:var(--surface);color:var(--text);padding:.75rem;font:inherit}
+.pdf-file-inspection dl{margin:1rem 0 0}.pdf-file-inspection dl div{display:grid;grid-template-columns:70px 1fr;gap:.75rem;padding:.55rem 0;border-bottom:1px solid var(--border)}.pdf-file-inspection dt{font-size:.8rem;color:var(--text-muted);font-weight:700}.pdf-file-inspection dd{margin:0;font-size:.88rem;overflow-wrap:anywhere}
+@media(max-width:760px){.pdf-lab-four-grid,.pdf-lab-metadata-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.pdf-lab-four-grid,.pdf-lab-metadata-grid{grid-template-columns:1fr}.pdf-lab-metadata-grid .field-group-wide{grid-column:auto}}
