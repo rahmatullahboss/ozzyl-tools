@@ -54,9 +54,7 @@ SEO_TOOLS = [
         "endpoint": "utility_tools.schema_markup_generator",
         "name": "Schema Markup JSON-LD Generator",
         "short_name": "Schema Markup Generator",
-        "summary": (
-            "Create valid JSON-LD for Organization, WebSite, Article, or FAQPage content."
-        ),
+        "summary": ("Create valid JSON-LD for Organization, WebSite, Article, or FAQPage content."),
         "category": "SEO",
         "icon": "boxes",
         "kind": "schema",
