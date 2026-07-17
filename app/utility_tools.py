@@ -3,6 +3,7 @@ from __future__ import annotations
 from flask import Blueprint, render_template
 
 from .data_tools import DATA_TOOLS, DATA_TOOLS_BY_SLUG
+from .seo_tools import SEO_TOOLS, SEO_TOOLS_BY_SLUG
 
 bp = Blueprint("utility_tools", __name__)
 
@@ -53,7 +54,7 @@ CORE_UTILITY_TOOLS = [
     },
 ]
 
-UTILITY_TOOLS = [*CORE_UTILITY_TOOLS, *DATA_TOOLS]
+UTILITY_TOOLS = [*CORE_UTILITY_TOOLS, *DATA_TOOLS, *SEO_TOOLS]
 UTILITY_TOOLS_BY_SLUG = {tool["slug"]: tool for tool in UTILITY_TOOLS}
 
 
@@ -79,6 +80,18 @@ def _render_data_utility(slug: str):
     related_tools = [candidate for candidate in DATA_TOOLS if candidate["slug"] != slug][:3]
     return render_template(
         "data-tool.html",
+        tool=tool,
+        related_tools=related_tools,
+        page_title=tool["name"],
+        meta_description=tool["summary"],
+    )
+
+
+def _render_seo_utility(slug: str):
+    tool = SEO_TOOLS_BY_SLUG[slug]
+    related_tools = [candidate for candidate in SEO_TOOLS if candidate["slug"] != slug][:3]
+    return render_template(
+        "seo-tool.html",
         tool=tool,
         related_tools=related_tools,
         page_title=tool["name"],
@@ -144,3 +157,43 @@ def timestamp_converter():
 @bp.get("/tools/regex-tester/")
 def regex_tester():
     return _render_data_utility("regex-tester")
+
+
+@bp.get("/tools/meta-tag-serp-preview/")
+def meta_tag_preview():
+    return _render_seo_utility("meta-tag-serp-preview")
+
+
+@bp.get("/tools/open-graph-generator/")
+def open_graph_generator():
+    return _render_seo_utility("open-graph-generator")
+
+
+@bp.get("/tools/robots-txt-generator-tester/")
+def robots_txt_tool():
+    return _render_seo_utility("robots-txt-generator-tester")
+
+
+@bp.get("/tools/xml-sitemap-generator/")
+def xml_sitemap_generator():
+    return _render_seo_utility("xml-sitemap-generator")
+
+
+@bp.get("/tools/schema-markup-generator/")
+def schema_markup_generator():
+    return _render_seo_utility("schema-markup-generator")
+
+
+@bp.get("/tools/seo-slug-generator/")
+def seo_slug_generator():
+    return _render_seo_utility("seo-slug-generator")
+
+
+@bp.get("/tools/keyword-density-analyzer/")
+def keyword_density_analyzer():
+    return _render_seo_utility("keyword-density-analyzer")
+
+
+@bp.get("/tools/heading-structure-checker/")
+def heading_structure_checker():
+    return _render_seo_utility("heading-structure-checker")
