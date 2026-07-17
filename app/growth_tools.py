@@ -34,10 +34,10 @@ def _result(key: str, label: str, format_name: str) -> dict:
 
 GROWTH_TOOLS = [
     {
-        "slug": "roi-calculator",
-        "endpoint": "growth_tools.roi",
-        "name": "ROI Calculator",
-        "short_name": "ROI",
+        "slug": "investment-return-analyzer",
+        "endpoint": "growth_tools.investment_return",
+        "name": "Investment Return Analyzer",
+        "short_name": "Investment Return Analyzer",
         "summary": (
             "Measure return on investment, net profit, annualized ROI, and the break-even "
             "return required to recover the investment."
@@ -192,9 +192,9 @@ def _render(slug: str):
     )
 
 
-@bp.get("/tools/roi-calculator/")
-def roi():
-    return _render("roi-calculator")
+@bp.get("/tools/investment-return-analyzer/")
+def investment_return():
+    return _render("investment-return-analyzer")
 
 
 @bp.get("/tools/roas-calculator/")
