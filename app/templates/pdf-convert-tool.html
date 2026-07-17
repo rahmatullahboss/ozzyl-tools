@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import icon %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pdf-tools.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/pdf-convert.css') }}">
+{% endblock %}
+
+{% block structured_data %}
+{{ super() }}
+<script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": tool.name,
+  "description": tool.summary,
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "url": site_url + request.path,
+  "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"}
+}|tojson }}</script>
+{% endblock %}
+
+{% block content %}
+<section class="pdf-hero"><div class="container pdf-hero-inner"><div><a class="back-link" href="{{ url_for('main.home') }}#pdf-tools">{{ icon('arrow-left', 17) }} All PDF tools</a><span class="pill">Private · Browser-based · Conversion</span><h1>{{ tool.name }}</h1><p>{{ tool.summary }} Your document stays on this device.</p></div><span class="pdf-hero-icon">{{ icon(tool.icon, 34) }}</span></div></section>
+
+<section class="section pdf-workspace-section">
+  <div class="container pdf-layout" data-pdf-convert="{{ tool.kind }}">
+    <article class="pdf-workspace">
+      <div class="pdf-workspace-heading"><div><span class="eyebrow">PDF conversion</span><h2>{{ tool.name }}</h2></div><span class="local-badge">{{ icon('lock', 16) }} Local processing</span></div>
+      <form data-convert-form="{{ tool.kind }}">
+        <label class="pdf-dropzone" data-dropzone>{{ icon('upload', 28) }}<strong>Select one PDF</strong><span>The file will be read in browser memory and never uploaded to Ozzyl Tools.</span><input type="file" accept="application/pdf,.pdf" required data-pdf-file></label>
+        {% if tool.kind in ['images', 'text', 'resize'] %}<label class="field-group"><span>Pages</span><input type="text" inputmode="numeric" placeholder="Leave blank for all pages" data-pages><small>Example: 1-3, 5</small></label>{% endif %}
+        {% if tool.kind == 'images' %}
+        <div class="pdf-convert-options"><label class="field-group"><span>Image format</span><select data-image-format><option value="png">PNG</option><option value="jpeg">JPEG</option></select></label><label class="field-group"><span>Render quality</span><select data-render-scale><option value="1">Standard</option><option value="1.5" selected>High</option><option value="2">Very high</option></select></label></div>
+        <button class="button button-primary button-full" type="submit" data-process-button disabled>{{ icon('file-text', 18) }} Render selected pages</button>
+        <div class="pdf-convert-actions" data-image-actions hidden><button class="button button-secondary" type="button" data-download-all>{{ icon('download', 17) }} Download all rendered pages</button></div><div class="pdf-render-gallery" data-render-gallery hidden></div>
+        {% elif tool.kind == 'text' %}
+        <button class="button button-primary button-full" type="submit" data-process-button disabled>{{ icon('letters', 18) }} Extract text</button><textarea class="pdf-text-output" readonly placeholder="Extracted text will appear here." data-text-output></textarea><div class="pdf-convert-actions" data-text-actions hidden><button class="button button-secondary" type="button" data-copy-text>{{ icon('copy', 17) }} Copy text</button><button class="button button-secondary" type="button" data-download-text>{{ icon('download', 17) }} Download TXT</button></div>
+        {% elif tool.kind == 'flatten' %}
+        <div class="formula-note">{{ icon('info', 17) }} <span>Flattening makes form field appearances part of the page content. The fields will no longer be editable afterward.</span></div><button class="button button-primary button-full" type="submit" data-process-button disabled>{{ icon('layers', 18) }} Flatten form and download</button>
+        {% elif tool.kind == 'resize' %}
+        <div class="pdf-convert-options"><label class="field-group"><span>Target page size</span><select data-page-size><option value="a4-portrait">A4 portrait</option><option value="a4-landscape">A4 landscape</option><option value="letter-portrait">Letter portrait</option><option value="letter-landscape">Letter landscape</option><option value="custom">Custom millimetres</option></select></label><label class="field-group"><span>Content mode</span><select data-resize-mode><option value="fit">Fit and center</option><option value="center">Keep size and center</option><option value="stretch">Stretch to fill</option></select></label></div><div class="pdf-convert-options" data-custom-size hidden><label class="field-group"><span>Width</span><div class="number-field"><input type="number" min="25.4" max="2000" step="0.1" value="210" data-custom-width><span class="field-affix">mm</span></div></label><label class="field-group"><span>Height</span><div class="number-field"><input type="number" min="25.4" max="2000" step="0.1" value="297" data-custom-height><span class="field-affix">mm</span></div></label></div><div class="formula-note">{{ icon('info', 17) }} <span>Fit preserves aspect ratio. Stretch fills the page but may distort content.</span></div><button class="button button-primary button-full" type="submit" data-process-button disabled>{{ icon('layers', 18) }} Resize and download</button>
+        {% endif %}
+      </form>
+      <div class="pdf-status" role="status" aria-live="polite" data-convert-status hidden></div>
+    </article>
+    <aside class="pdf-sidebar"><div class="pdf-info-card" data-file-inspection hidden><span class="icon-tile">{{ icon('file-text', 22) }}</span><h2>Selected document</h2><dl><div><dt>File</dt><dd data-file-name>—</dd></div><div><dt>Size</dt><dd data-file-size>—</dd></div><div><dt>Pages</dt><dd data-page-count>—</dd></div></dl></div><div class="pdf-info-card"><span class="icon-tile">{{ icon('shield', 22) }}</span><h2>Your PDF stays private</h2><p>Rendering, text extraction, form flattening, and page resizing happen in browser memory.</p></div><div class="pdf-info-card"><h2>Reliable limits</h2><p>For better mobile performance, use a PDF under 50 MB. Scanned PDFs without a text layer will not produce OCR text.</p></div></aside>
+  </div>
+</section>
+<section class="section section-surface"><div class="container"><div class="section-heading centered-heading"><span class="eyebrow">More PDF conversion tools</span><h2>Continue working with the document.</h2></div><div class="tool-grid">{% for related in related_tools %}<article class="tool-card"><div class="tool-card-head"><span class="icon-tile">{{ icon(related.icon, 22) }}</span></div><div><span class="eyebrow">PDF conversion</span><h3><a href="{{ url_for(related.endpoint) }}">{{ related.short_name }}</a></h3><p>{{ related.summary }}</p></div><a class="card-link" href="{{ url_for(related.endpoint) }}">Open PDF tool <span aria-hidden="true">→</span></a></article>{% endfor %}</div></div></section>
+{% endblock %}
+
+{% block scripts %}<script type="module" src="{{ url_for('static', filename='js/pdf-convert.js') }}"></script>{% endblock %}
