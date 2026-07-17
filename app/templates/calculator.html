@@ -14,8 +14,33 @@
   "applicationCategory": "BusinessApplication",
   "operatingSystem": "Any",
   "offers": {"@type": "Offer", "price": "0", "priceCurrency": "USD"},
-  "description": tool.summary
+  "description": tool.summary,
+  "dateModified": content_updated,
+  "isAccessibleForFree": true,
+  "publisher": {"@id": site_url + "#organization"}
 }|tojson }}</script>
+<script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": site_url + url_for('main.home')},
+    {"@type": "ListItem", "position": 2, "name": "Calculators", "item": site_url + url_for('main.home') + "#calculators"},
+    {"@type": "ListItem", "position": 3, "name": tool.name, "item": site_url + request.path}
+  ]
+}|tojson }}</script>
+<script type="application/ld+json" nonce="{{ g.csp_nonce }}">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for item in faq_items %}{
+      "@type": "Question",
+      "name": {{ item.question|tojson }},
+      "acceptedAnswer": {"@type": "Answer", "text": {{ item.answer|tojson }}}
+    }{% if not loop.last %},{% endif %}{% endfor %}
+  ]
+}
+</script>
 {% endblock %}
 
 {% block content %}
@@ -26,7 +51,7 @@
     </nav>
     <div class="tool-title-row">
       <span class="icon-tile icon-tile-large">{{ icon(tool.icon, 28) }}</span>
-      <div><span class="eyebrow">{{ tool.category }} calculator</span><h1>{{ tool.name }}</h1><p>{{ tool.summary }}</p></div>
+      <div><span class="eyebrow">Free {{ tool.category|lower }} calculator</span><h1>{{ tool.name }}</h1><p>{{ tool.summary }}</p><small>Last reviewed {{ content_updated }} · No account required</small></div>
       <button class="button button-secondary favorite-page-button" type="button" data-favorite="{{ tool.slug }}" aria-pressed="false">{{ icon('star', 18) }} <span>Save</span></button>
     </div>
   </div>
@@ -50,7 +75,7 @@
             <input id="{{ input.id }}" name="{{ input.id }}" type="number" inputmode="decimal" value="{{ input.value }}" min="{{ input.min }}" {% if input.max is defined %}max="{{ input.max }}"{% endif %} step="{{ input.step }}" required aria-describedby="{{ input.id }}-help {{ input.id }}-error">
             <span class="field-affix" aria-hidden="true"></span>
           </div>
-          <small id="{{ input.id }}-help" class="field-help">Enter a valid non-negative number.</small>
+          <small id="{{ input.id }}-help" class="field-help">Enter a valid number within the shown range.</small>
           <small id="{{ input.id }}-error" class="field-error" role="alert"></small>
         </div>
         {% endfor %}
@@ -60,76 +85,33 @@
 
     <aside class="result-card" aria-labelledby="result-heading">
       <div class="card-heading"><div><span class="eyebrow">Live result</span><h2 id="result-heading">Your calculation</h2></div><span class="status-dot"><span></span> Updated</span></div>
-      <div class="primary-result" data-primary-result>
-        <span>{{ tool.results[0].label }}</span><strong data-result="{{ tool.results[0].key }}" data-format="{{ tool.results[0].format }}">—</strong>
-      </div>
-      <div class="result-list">
-        {% for result in tool.results[1:] %}<div><span>{{ result.label }}</span><strong data-result="{{ result.key }}" data-format="{{ result.format }}">—</strong></div>{% endfor %}
-      </div>
-      <div class="result-actions">
-        <button type="button" class="button button-secondary" data-copy-results>{{ icon('copy', 17) }} Copy results</button>
-        <button type="button" class="button button-secondary" data-share-calculation>{{ icon('share', 17) }} Share</button>
-      </div>
+      <div class="primary-result" data-primary-result><span>{{ tool.results[0].label }}</span><strong data-result="{{ tool.results[0].key }}" data-format="{{ tool.results[0].format }}">—</strong></div>
+      <div class="result-list">{% for result in tool.results[1:] %}<div><span>{{ result.label }}</span><strong data-result="{{ result.key }}" data-format="{{ result.format }}">—</strong></div>{% endfor %}</div>
+      <div class="result-actions"><button type="button" class="button button-secondary" data-copy-results>{{ icon('copy', 17) }} Copy results</button><button type="button" class="button button-secondary" data-share-calculation>{{ icon('share', 17) }} Share</button></div>
       <p class="privacy-note">{{ icon('lock', 15) }} Values are calculated and saved on this device.</p>
     </aside>
 
     <section class="advanced-analysis" aria-labelledby="advanced-analysis-title">
-      <div class="advanced-analysis-heading">
-        <div><span class="eyebrow">Advanced analysis</span><h2 id="advanced-analysis-title">Compare, stress-test, and export</h2><p>Explore another scenario, test input changes, and download the analysis as CSV.</p></div>
-        <button class="button button-secondary" type="button" data-export-analysis>{{ icon('download', 17) }} Export CSV</button>
-      </div>
-
+      <div class="advanced-analysis-heading"><div><span class="eyebrow">Advanced analysis</span><h2 id="advanced-analysis-title">Compare, stress-test, and export</h2><p>Explore another scenario, test input changes, and download the analysis as CSV.</p></div><button class="button button-secondary" type="button" data-export-analysis>{{ icon('download', 17) }} Export CSV</button></div>
       <div class="analysis-grid">
         <article class="analysis-card">
           <div class="analysis-card-heading"><div><span class="eyebrow">Scenario planning</span><h3>Compare Scenario B</h3></div><label class="analysis-toggle"><input type="checkbox" data-scenario-toggle><span>Enable</span></label></div>
           <p>Change any input in a second scenario and see the difference for every result.</p>
-          <div data-scenario-panel hidden>
-            <div class="form-grid scenario-grid">
-              {% for input in tool.inputs %}
-              <div class="field-group">
-                <label for="scenario-{{ input.id }}">{{ input.label }}</label>
-                <div class="number-field" data-kind="{{ input.kind }}">
-                  <input id="scenario-{{ input.id }}" name="{{ input.id }}" type="number" inputmode="decimal" value="{{ input.value }}" min="{{ input.min }}" {% if input.max is defined %}max="{{ input.max }}"{% endif %} step="{{ input.step }}" data-scenario-input>
-                  <span class="field-affix" aria-hidden="true"></span>
-                </div>
-              </div>
-              {% endfor %}
-            </div>
-          </div>
+          <div data-scenario-panel hidden><div class="form-grid scenario-grid">{% for input in tool.inputs %}<div class="field-group"><label for="scenario-{{ input.id }}">{{ input.label }}</label><div class="number-field" data-kind="{{ input.kind }}"><input id="scenario-{{ input.id }}" name="{{ input.id }}" type="number" inputmode="decimal" value="{{ input.value }}" min="{{ input.min }}" {% if input.max is defined %}max="{{ input.max }}"{% endif %} step="{{ input.step }}" data-scenario-input><span class="field-affix" aria-hidden="true"></span></div></div>{% endfor %}</div></div>
           <div class="analysis-table-wrap" data-scenario-table hidden><table><thead></thead><tbody></tbody></table></div>
         </article>
-
-        <article class="analysis-card">
-          <div class="analysis-card-heading"><div><span class="eyebrow">Sensitivity</span><h3>What changes the result?</h3></div><span class="analysis-badge">±10%</span></div>
-          <p>Each row changes one input while holding every other value constant.</p>
-          <div class="analysis-table-wrap"><table data-sensitivity-table><thead></thead><tbody></tbody></table></div>
-        </article>
+        <article class="analysis-card"><div class="analysis-card-heading"><div><span class="eyebrow">Sensitivity</span><h3>What changes the result?</h3></div><span class="analysis-badge">±10%</span></div><p>Each row changes one input while holding every other value constant.</p><div class="analysis-table-wrap"><table data-sensitivity-table><thead></thead><tbody></tbody></table></div></article>
       </div>
-
-      <article class="analysis-card projection-card" data-projection-card hidden>
-        <div class="analysis-card-heading">
-          <div><span class="eyebrow">Detailed projection</span><h3>Schedule and future breakdown</h3></div>
-          {% if tool.formula == 'loan' %}
-          <label class="compact-analysis-field"><span>Extra monthly payment</span><div class="number-field"><input type="number" min="0" step="0.01" value="0" data-loan-extra-payment><span class="field-affix" data-advanced-currency-affix></span></div></label>
-          {% endif %}
-        </div>
-        <p class="projection-summary" data-projection-summary></p>
-        <div class="analysis-table-wrap projection-table-wrap"><table data-projection-table><thead></thead><tbody></tbody></table></div>
-      </article>
+      <article class="analysis-card projection-card" data-projection-card hidden><div class="analysis-card-heading"><div><span class="eyebrow">Detailed projection</span><h3>Schedule and future breakdown</h3></div></div><p class="projection-summary" data-projection-summary></p><div class="analysis-table-wrap projection-table-wrap"><table data-projection-table><thead></thead><tbody></tbody></table></div></article>
     </section>
   </div>
 </section>
 
-<section class="section section-surface">
-  <div class="container content-grid">
-    <article class="prose-card"><span class="eyebrow">How it works</span><h2>Use the result confidently</h2><p>{{ tool.guide }}</p><h3>Practical workflow</h3><ol><li>Enter values from the same time period and currency.</li><li>Review the formula and result assumptions.</li><li>Compare a second scenario and review sensitivity.</li><li>Verify tax, payroll, lending, or legal rules that vary by location.</li></ol></article>
-    <aside class="prose-card callout-card"><span>{{ icon('sparkles', 22) }}</span><h2>Turn the result into a document</h2><p>Create a professional quotation or invoice with the same currency and pricing.</p><a class="button button-primary button-full" href="{{ url_for('main.document_generator', document_type='quotation') }}">Create quotation</a></aside>
-  </div>
-</section>
+<section class="section section-surface"><div class="container content-grid"><article class="prose-card"><span class="eyebrow">What this calculator does</span><h2>Understand your {{ tool.short_name|lower }} result</h2><p><strong>{{ tool.summary }}</strong> {{ tool.guide }} The calculator updates immediately as you change inputs, so you can compare practical scenarios without creating an account.</p><h3>Formula</h3><p>{{ tool.formula_text }}</p><h3>Practical workflow</h3><ol><li>Enter values from the same time period and currency.</li><li>Review the formula and result assumptions.</li><li>Compare a second scenario and review sensitivity.</li><li>Verify tax, payroll, accounting, or legal rules that vary by location.</li></ol></article><aside class="prose-card callout-card"><span>{{ icon('sparkles', 22) }}</span><h2>Turn the result into a document</h2><p>Create a professional quotation or invoice with the same currency and pricing.</p><a class="button button-primary button-full" href="{{ url_for('main.document_generator', document_type='quotation') }}">Create quotation</a></aside></div></section>
 
-<section class="section">
-  <div class="container"><div class="section-heading"><span class="eyebrow">Keep working</span><h2>Related tools</h2></div><div class="tool-grid tool-grid-small">{% for related in related_tools %}{{ tool_card(related, compact=true) }}{% endfor %}</div></div>
-</section>
+<section class="section" aria-labelledby="calculator-faq-title"><div class="container"><div class="section-heading"><span class="eyebrow">Questions and answers</span><h2 id="calculator-faq-title">{{ tool.name }} FAQ</h2></div><div class="content-grid">{% for item in faq_items %}<article class="prose-card"><h3>{{ item.question }}</h3><p>{{ item.answer }}</p></article>{% endfor %}</div></div></section>
+
+<section class="section section-surface"><div class="container"><div class="section-heading"><span class="eyebrow">Keep working</span><h2>Related tools</h2></div><div class="tool-grid tool-grid-small">{% for related in related_tools %}{{ tool_card(related, compact=true) }}{% endfor %}</div></div></section>
 {% endblock %}
 
 {% block scripts %}<script type="module" src="{{ url_for('static', filename='js/calculator.js') }}"></script>{% endblock %}
