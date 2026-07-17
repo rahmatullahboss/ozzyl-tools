@@ -31,12 +31,14 @@ def create_app(config_name: str | None = None, test_config: dict | None = None) 
 
     # Import models after the extension is initialized so Alembic sees metadata.
     from . import models  # noqa: F401
+    from .pdf_tools import bp as pdf_tools_bp
     from .routes import bp
     from .utility_tools import bp as utility_tools_bp
     from .word_tools import bp as word_tools_bp
 
     app.register_blueprint(word_tools_bp)
     app.register_blueprint(utility_tools_bp)
+    app.register_blueprint(pdf_tools_bp)
     app.register_blueprint(bp)
     register_request_hooks(app)
     register_error_handlers(app)
@@ -65,7 +67,7 @@ def register_request_hooks(app: Flask) -> None:
             "; ".join(
                 [
                     "default-src 'self'",
-                    f"script-src 'self' 'nonce-{nonce}'",
+                    f"script-src 'self' 'nonce-{nonce}' https://unpkg.com",
                     "style-src 'self' 'unsafe-inline'",
                     "img-src 'self' data: blob:",
                     "font-src 'self'",
