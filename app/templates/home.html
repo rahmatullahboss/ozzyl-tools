@@ -75,5 +75,19 @@
 
 <section class="section section-surface" aria-labelledby="home-faq-title"><div class="container"><div class="section-heading centered-heading"><span class="eyebrow">Common questions</span><h2 id="home-faq-title">About these free online tools</h2></div><div class="content-grid">{% for item in home_faq %}<article class="prose-card"><h3>{{ item.question }}</h3><p>{{ item.answer }}</p></article>{% endfor %}</div></div></section>
 
+<section class="section" id="report-problem" aria-labelledby="report-problem-title">
+  <div class="container cta-card">
+    <div>
+      <span class="eyebrow">Help us improve</span>
+      <h2 id="report-problem-title">Found a problem or need a useful new tool?</h2>
+      <p>Report an incorrect result, broken file, confusing instruction, or accessibility issue. Your email will include the page address automatically so the problem is easier to investigate.</p>
+    </div>
+    <div class="cta-actions">
+      <a class="button button-primary" href="mailto:{{ contact_email }}?subject=Report%20a%20problem%20on%20Ozzyl%20Tools&amp;body=Page%3A%20{{ site_url }}{{ request.path }}%0A%0APlease%20describe%20the%20problem%3A%0A%0AExpected%20result%3A%0A%0ABrowser%20or%20device%20(optional)%3A%20">{{ icon('info', 17) }} Report a problem</a>
+      <a class="button button-secondary" href="mailto:{{ contact_email }}?subject=Tool%20suggestion%20for%20Ozzyl%20Tools&amp;body=Suggested%20tool%20name%3A%0A%0AWhat%20problem%20should%20it%20solve%3F%0A%0AWho%20would%20use%20it%3F%0A">{{ icon('plus', 17) }} Suggest a tool</a>
+    </div>
+  </div>
+</section>
+
 <section class="section section-cta"><div class="container cta-card"><div><span class="eyebrow">Start with a useful result</span><h2>Calculate your margin, prepare the PDF, then create the document.</h2><p>Move from planning to customer-ready work without switching between multiple websites.</p></div><div class="cta-actions"><a class="button button-primary" href="{{ url_for('main.calculator', slug='profit-margin-calculator') }}">Calculate margin</a><a class="button button-secondary" href="{{ url_for('main.document_generator', document_type='quotation') }}">Create quotation</a></div></div></section>
 {% endblock %}
