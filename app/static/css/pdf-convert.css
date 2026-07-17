@@ -1,0 +1,9 @@
+.pdf-convert-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin: 1rem 0; }
+.pdf-render-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-top: 1rem; }
+.pdf-render-card { padding: 0.8rem; border: 1px solid var(--border); border-radius: 1rem; background: var(--surface); }
+.pdf-render-card img { width: 100%; height: auto; border-radius: 0.65rem; background: white; }
+.pdf-render-card .button { margin-top: 0.65rem; width: 100%; }
+.pdf-text-output { width: 100%; min-height: 22rem; margin-top: 1rem; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+.pdf-convert-actions { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 1rem; }
+.pdf-convert-actions[hidden], .pdf-render-gallery[hidden] { display: none; }
+@media (max-width: 700px) { .pdf-convert-options { grid-template-columns: 1fr; } }
