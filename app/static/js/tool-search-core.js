@@ -2,7 +2,7 @@ export function normalizeSearch(value) {
   return String(value ?? "")
     .normalize("NFKC")
     .toLowerCase()
-    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .replace(/[^\p{L}\p{M}\p{N}]+/gu, " ")
     .trim()
     .replace(/\s+/gu, " ");
 }
