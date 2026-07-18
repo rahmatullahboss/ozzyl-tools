@@ -33,6 +33,7 @@ def create_app(config_name: str | None = None, test_config: dict | None = None) 
     from . import models  # noqa: F401
     from .directory_routes import bp as tool_directory_bp
     from .growth_tools import bp as growth_tools_bp
+    from .guide_routes import bp as guides_bp
     from .pdf_convert import bp as pdf_convert_bp
     from .pdf_lab import bp as pdf_lab_bp
     from .pdf_markup import bp as pdf_markup_bp
@@ -49,6 +50,7 @@ def create_app(config_name: str | None = None, test_config: dict | None = None) 
     app.register_blueprint(pdf_convert_bp)
     app.register_blueprint(pdf_markup_bp)
     app.register_blueprint(tool_directory_bp)
+    app.register_blueprint(guides_bp)
     app.register_blueprint(bp)
     register_request_hooks(app)
     register_error_handlers(app)
