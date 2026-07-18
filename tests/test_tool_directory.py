@@ -16,7 +16,9 @@ def test_directory_catalog_is_unique_complete_and_grouped():
     assert len(DIRECTORY_ITEMS) == len(DIRECTORY_ITEMS_BY_SLUG)
     assert set(DIRECTORY_ITEMS_BY_GROUP) == set(DIRECTORY_GROUPS)
     assert all(DIRECTORY_ITEMS_BY_GROUP[group] for group in DIRECTORY_GROUPS)
-    assert sum(len(items) for items in DIRECTORY_ITEMS_BY_GROUP.values()) == len(DIRECTORY_ITEMS)
+    assert sum(len(items) for items in DIRECTORY_ITEMS_BY_GROUP.values()) == len(
+        DIRECTORY_ITEMS
+    )
 
     for item in DIRECTORY_ITEMS:
         assert item["group"] in DIRECTORY_GROUPS
@@ -97,4 +99,4 @@ def test_directory_is_linked_from_navigation_and_discovery_files(client):
     for group_slug, group in DIRECTORY_GROUPS.items():
         path = f"/tools/category/{group_slug}/".encode()
         assert path in sitemap.data
-        assert html.escape(group["name"]).encode() in llms.data
+        assert group["name"].encode() in llms.data
