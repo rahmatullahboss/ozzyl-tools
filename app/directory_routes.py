@@ -55,17 +55,20 @@ def add_directory_discovery(response):
             for url in _directory_discovery_urls(external=True)
         )
         body = response.get_data(as_text=True)
-        if url_for("tool_directory.index", _external=True) not in body:
+        directory_url = url_for("tool_directory.index", _external=True)
+        directory_marker = f"<loc>{escape(directory_url)}</loc>"
+        if directory_marker not in body:
             response.set_data(body.replace("</urlset>", entries + "</urlset>"))
 
     if request.endpoint == "main.llms_txt":
         body = response.get_data(as_text=True)
         directory_url = url_for("tool_directory.index", _external=True)
-        if directory_url not in body:
+        directory_marker = f"[All Tools]({directory_url})"
+        if directory_marker not in body:
             lines = [
                 "",
                 "## Tool directory",
-                f"- [All Tools]({directory_url}): Browse the complete public tool catalog.",
+                f"- {directory_marker}: Browse the complete public tool catalog.",
             ]
             lines.extend(
                 (
