@@ -166,8 +166,7 @@ DIRECTORY_ITEMS.extend(
     _tool_item(tool, "business-calculators", "Business calculator") for tool in TOOLS
 )
 DIRECTORY_ITEMS.extend(
-    _tool_item(tool, "business-calculators", "Business growth calculator")
-    for tool in GROWTH_TOOLS
+    _tool_item(tool, "business-calculators", "Business growth calculator") for tool in GROWTH_TOOLS
 )
 for tool in UTILITY_TOOLS:
     if tool["category"] in {"SEO", "Webmaster", "Content", "Marketing"}:
@@ -205,9 +204,7 @@ for collection, family in (
 ):
     DIRECTORY_ITEMS.extend(_tool_item(tool, "pdf-tools", family) for tool in collection)
 
-DIRECTORY_ITEMS.extend(
-    _document_item(kind, document) for kind, document in DOCUMENT_TYPES.items()
-)
+DIRECTORY_ITEMS.extend(_document_item(kind, document) for kind, document in DOCUMENT_TYPES.items())
 DIRECTORY_ITEMS_BY_SLUG = {item["slug"]: item for item in DIRECTORY_ITEMS}
 DIRECTORY_ITEMS_BY_GROUP = {
     group_slug: [item for item in DIRECTORY_ITEMS if item["group"] == group_slug]
