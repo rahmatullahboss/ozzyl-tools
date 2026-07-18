@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from flask import Blueprint, abort, jsonify, render_template, url_for
+from html import escape
+
+from flask import Blueprint, abort, jsonify, render_template, request, url_for
 
 from .tool_directory import DIRECTORY_GROUPS, DIRECTORY_ITEMS, DIRECTORY_ITEMS_BY_GROUP
 
@@ -26,9 +28,57 @@ def _resolved_groups() -> list[dict]:
     ]
 
 
+def _directory_discovery_urls(*, external: bool) -> list[str]:
+    urls = [url_for("tool_directory.index", _external=external)]
+    urls.extend(
+        url_for("tool_directory.category", group_slug=slug, _external=external)
+        for slug in DIRECTORY_GROUPS
+    )
+    return urls
+
+
 @bp.app_context_processor
 def inject_directory_navigation() -> dict:
     return {"directory_groups": _resolved_groups()}
+
+
+@bp.after_app_request
+def add_directory_discovery(response):
+    if response.status_code != 200:
+        return response
+
+    if request.endpoint == "main.sitemap":
+        from .routes import CONTENT_UPDATED
+
+        entries = "".join(
+            "<url><loc>"
+            + escape(url)
+            + "</loc><lastmod>"
+            + CONTENT_UPDATED
+            + "</lastmod></url>"
+            for url in _directory_discovery_urls(external=True)
+        )
+        body = response.get_data(as_text=True)
+        if url_for("tool_directory.index", _external=True) not in body:
+            response.set_data(body.replace("</urlset>", entries + "</urlset>"))
+
+    if request.endpoint == "main.llms_txt":
+        body = response.get_data(as_text=True)
+        directory_url = url_for("tool_directory.index", _external=True)
+        if directory_url not in body:
+            lines = [
+                "",
+                "## Tool directory",
+                f"- [All Tools]({directory_url}): Browse the complete public tool catalog.",
+            ]
+            lines.extend(
+                f"- [{group['name']}]({url_for('tool_directory.category', group_slug=slug, _external=True)}): {group['summary']}"
+                for slug, group in DIRECTORY_GROUPS.items()
+            )
+            insertion = "\n".join(lines) + "\n"
+            response.set_data(body.replace("\n## Usage notes", insertion + "\n## Usage notes"))
+
+    return response
 
 
 @bp.get("/tools/")
