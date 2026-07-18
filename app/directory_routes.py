@@ -72,11 +72,17 @@ def add_directory_discovery(response):
                 f"- [All Tools]({directory_url}): Browse the complete public tool catalog.",
             ]
             lines.extend(
-                f"- [{group['name']}]({url_for('tool_directory.category', group_slug=slug, _external=True)}): {group['summary']}"
+                (
+                    f"- [{group['name']}]"
+                    f"({url_for('tool_directory.category', group_slug=slug, _external=True)}): "
+                    f"{group['summary']}"
+                )
                 for slug, group in DIRECTORY_GROUPS.items()
             )
             insertion = "\n".join(lines) + "\n"
-            response.set_data(body.replace("\n## Usage notes", insertion + "\n## Usage notes"))
+            response.set_data(
+                body.replace("\n## Usage notes", insertion + "\n## Usage notes")
+            )
 
     return response
 
@@ -105,7 +111,9 @@ def category(group_slug: str):
     return render_template(
         "tool-directory.html",
         directory_mode="category",
-        directory_items=[_resolved_item(item) for item in DIRECTORY_ITEMS_BY_GROUP[group_slug]],
+        directory_items=[
+            _resolved_item(item) for item in DIRECTORY_ITEMS_BY_GROUP[group_slug]
+        ],
         directory_groups=_resolved_groups(),
         active_group={
             **group,
