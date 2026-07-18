@@ -32,7 +32,20 @@ jobs:
       - run: python -m pip install --upgrade pip
       - run: pip install -r requirements-dev.txt
       - run: ruff check .
-      - run: ruff format --check .
+      - name: Capture Ruff formatting diff
+        shell: bash
+        run: |
+          set +e
+          ruff format --check --diff . > /tmp/ruff-format.diff 2>&1
+          status=$?
+          cat /tmp/ruff-format.diff
+          exit $status
+      - name: Upload Ruff formatting diff
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ruff-format-diff
+          path: /tmp/ruff-format.diff
       - run: python -m compileall -q app migrations tests
       - run: pytest --cov=app --cov-report=term-missing
       - run: node --check app/static/js/app.js && node --check app/static/js/calculator.js && node --check app/static/js/document.js && node --check app/static/js/service-worker.js
