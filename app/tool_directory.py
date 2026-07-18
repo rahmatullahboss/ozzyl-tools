@@ -115,12 +115,13 @@ DIRECTORY_GROUPS = {
 def _tool_item(tool: dict, group: str, family: str) -> DirectoryItem:
     endpoint = tool.get("endpoint", "main.calculator")
     values = {} if "endpoint" in tool else {"slug": tool["slug"]}
+    category = tool.get("category", "PDF" if group == "pdf-tools" else family)
     return {
         "slug": tool["slug"],
         "name": tool["name"],
         "short_name": tool["short_name"],
         "summary": tool["summary"],
-        "category": tool["category"],
+        "category": category,
         "icon": tool["icon"],
         "group": group,
         "family": family,
@@ -131,7 +132,7 @@ def _tool_item(tool: dict, group: str, family: str) -> DirectoryItem:
                 tool["name"],
                 tool["short_name"],
                 tool["summary"],
-                tool["category"],
+                category,
                 DIRECTORY_GROUPS[group]["keywords"],
             ]
         ).lower(),
