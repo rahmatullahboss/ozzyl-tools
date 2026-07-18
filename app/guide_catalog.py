@@ -269,7 +269,11 @@ GUIDES: list[Guide] = [
         "related_tools": [
             {"endpoint": "pdf_tools.reorder_pdf_pages", "values": {}, "label": "Reorder PDF Pages"},
             {"endpoint": "pdf_tools.rotate_pdf", "values": {}, "label": "Rotate PDF"},
-            {"endpoint": "pdf_tools.add_pdf_page_numbers", "values": {}, "label": "Add PDF Page Numbers"},
+            {
+                "endpoint": "pdf_tools.add_pdf_page_numbers",
+                "values": {},
+                "label": "Add PDF Page Numbers",
+            },
         ],
         "context_tools": [
             {"endpoint": "pdf_tools.merge_pdf", "values": {}},
@@ -372,9 +376,21 @@ GUIDES: list[Guide] = [
             "description": "Draft title, description, canonical, robots, and preview metadata in one place.",
         },
         "related_tools": [
-            {"endpoint": "utility_tools.open_graph_generator", "values": {}, "label": "Open Graph Generator"},
-            {"endpoint": "utility_tools.seo_slug_generator", "values": {}, "label": "SEO Slug Generator"},
-            {"endpoint": "utility_tools.schema_markup_generator", "values": {}, "label": "Schema Markup Generator"},
+            {
+                "endpoint": "utility_tools.open_graph_generator",
+                "values": {},
+                "label": "Open Graph Generator",
+            },
+            {
+                "endpoint": "utility_tools.seo_slug_generator",
+                "values": {},
+                "label": "SEO Slug Generator",
+            },
+            {
+                "endpoint": "utility_tools.schema_markup_generator",
+                "values": {},
+                "label": "Schema Markup Generator",
+            },
         ],
         "context_tools": [
             {"endpoint": "utility_tools.meta_tag_preview", "values": {}},
@@ -502,8 +518,16 @@ GUIDES: list[Guide] = [
             "description": "Validate, format, minify, sort, inspect, copy, and download JSON locally.",
         },
         "related_tools": [
-            {"endpoint": "utility_tools.csv_json_converter", "values": {}, "label": "CSV & JSON Converter"},
-            {"endpoint": "utility_tools.base64_tool", "values": {}, "label": "Base64 Encoder & Decoder"},
+            {
+                "endpoint": "utility_tools.csv_json_converter",
+                "values": {},
+                "label": "CSV & JSON Converter",
+            },
+            {
+                "endpoint": "utility_tools.base64_tool",
+                "values": {},
+                "label": "Base64 Encoder & Decoder",
+            },
             {"endpoint": "utility_tools.regex_tester", "values": {}, "label": "Regex Tester"},
         ],
         "context_tools": [
@@ -524,7 +548,7 @@ GUIDES: list[Guide] = [
                 ],
                 "example": {
                     "title": "Valid JSON example",
-                    "body": "{\"customer\":{\"name\":\"Amina\",\"active\":true},\"items\":[{\"sku\":\"A-10\",\"quantity\":2}],\"note\":null}",
+                    "body": '{"customer":{"name":"Amina","active":true},"items":[{"sku":"A-10","quantity":2}],"note":null}',
                 },
                 "bullets": [
                     "Objects use braces: { }",

@@ -32,12 +32,12 @@ def test_guides_hub_renders_every_guide(client):
     assert response.data.count(b'class="guide-card"') == len(GUIDES)
     for guide in GUIDES:
         assert html.escape(guide["short_title"]).encode() in response.data
-        assert f'/guides/{guide["slug"]}/'.encode() in response.data
+        assert f"/guides/{guide['slug']}/".encode() in response.data
 
 
 @pytest.mark.parametrize("guide", GUIDES, ids=lambda guide: guide["slug"])
 def test_each_guide_renders_article_schema_and_workflow(client, guide):
-    response = client.get(f'/guides/{guide["slug"]}/')
+    response = client.get(f"/guides/{guide['slug']}/")
 
     assert response.status_code == 200
     assert html.escape(guide["title"]).encode() in response.data
@@ -68,7 +68,7 @@ def test_contextual_guides_are_linked_from_matching_tools(client, path, guide_sl
 
     assert response.status_code == 200
     assert b"Related practical guide" in response.data
-    assert f'/guides/{guide_slug}/'.encode() in response.data
+    assert f"/guides/{guide_slug}/".encode() in response.data
     assert b"Read the guide" in response.data
 
 
@@ -91,7 +91,7 @@ def test_guides_are_linked_from_navigation_and_discovery(client):
     assert b"[Practical Guides]" in llms.data
 
     for guide in GUIDES:
-        path = f'/guides/{guide["slug"]}/'.encode()
+        path = f"/guides/{guide['slug']}/".encode()
         assert path in sitemap.data
         assert guide["short_title"].encode() in llms.data
 
