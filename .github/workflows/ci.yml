@@ -32,20 +32,16 @@ jobs:
       - run: python -m pip install --upgrade pip
       - run: pip install -r requirements-dev.txt
       - run: ruff check .
-      - name: Capture Ruff formatting diff
-        shell: bash
-        run: |
-          set +e
-          ruff format --check --diff . > /tmp/ruff-format.diff 2>&1
-          status=$?
-          cat /tmp/ruff-format.diff
-          exit $status
-      - name: Upload Ruff formatting diff
-        if: always()
+      - name: Format guide files for export
+        run: ruff format app/guide_catalog.py tests/test_guides.py
+      - name: Upload formatted guide files
         uses: actions/upload-artifact@v4
         with:
-          name: ruff-format-diff
-          path: /tmp/ruff-format.diff
+          name: formatted-guide-files
+          path: |
+            app/guide_catalog.py
+            tests/test_guides.py
+      - run: ruff format --check .
       - run: python -m compileall -q app migrations tests
       - run: pytest --cov=app --cov-report=term-missing
       - run: node --check app/static/js/app.js && node --check app/static/js/calculator.js && node --check app/static/js/document.js && node --check app/static/js/service-worker.js
