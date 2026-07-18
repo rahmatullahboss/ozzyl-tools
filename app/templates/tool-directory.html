@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import icon %}
+
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/tool-directory.css') }}">{% endblock %}
+{% block structured_data %}{% include 'tool-directory-schema.html' %}{% endblock %}
+
+{% block content %}
+<div data-directory-root data-initial-group="{{ active_group.slug if active_group else 'all' }}">
+  <section class="directory-hero">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <a href="{{ url_for('main.home') }}">Home</a><span>/</span>
+        {% if active_group %}<a href="{{ url_for('tool_directory.index') }}">All tools</a><span>/</span><span aria-current="page">{{ active_group.short_name }}</span>{% else %}<span aria-current="page">All tools</span>{% endif %}
+      </nav>
+      <div class="directory-hero-grid">
+        <div>
+          <span class="pill">Free · Private by default · Halal-friendly scope</span>
+          <h1>{{ active_group.title if active_group else 'All free online tools in one directory' }}</h1>
+          <p>{{ active_group.intro if active_group else 'Browse practical calculators, PDF workflows, SEO and developer utilities, writing helpers, and professional document generators. Every public tool is linked from this crawlable directory.' }}</p>
+        </div>
+        <aside class="directory-count-card" aria-label="Tool count"><strong data-directory-visible-count>{{ directory_items|length }}</strong><span>tools shown</span></aside>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-tight">
+    <div class="container">
+      <div class="directory-search-shell">
+        <label class="search-field"><span class="sr-only">Search all tools</span>{{ icon('search', 20) }}<input type="search" placeholder="Search profit, PDF, schema, JSON, invoice…" autocomplete="off" data-directory-search><kbd>/</kbd></label>
+        {% if directory_mode == 'all' %}
+        <div class="directory-filter-row" role="group" aria-label="Filter tool families">
+          <button type="button" class="filter-chip is-active" data-directory-filter="all" aria-pressed="true">All</button>
+          {% for group in directory_groups %}<button type="button" class="filter-chip" data-directory-filter="{{ group.slug }}" aria-pressed="false">{{ group.short_name }} · {{ group.count }}</button>{% endfor %}
+        </div>
+        {% else %}<a class="button button-secondary" href="{{ url_for('tool_directory.index') }}">Browse every category</a>{% endif %}
+      </div>
+    </div>
+  </section>
+
+  {% if directory_mode == 'all' %}
+  <section class="section section-tight" aria-labelledby="directory-categories-title">
+    <div class="container">
+      <div class="section-heading"><span class="eyebrow">Browse by task</span><h2 id="directory-categories-title">Focused tool categories</h2><p>Open a category page for a smaller, task-specific collection and stronger internal navigation.</p></div>
+      <div class="directory-groups">
+        {% for group in directory_groups %}
+        <a class="directory-group-card" href="{{ group.url }}">
+          <span class="icon-tile">{{ icon(group.icon, 22) }}</span>
+          <div><h3>{{ group.name }}</h3><p>{{ group.summary }}</p></div>
+          <footer><span>{{ group.count }} tools</span><span aria-hidden="true">→</span></footer>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="section">
+    <div class="container">
+      <div class="directory-section-header"><div><span class="eyebrow">{{ active_group.short_name if active_group else 'Complete catalog' }}</span><h2>{{ active_group.name if active_group else 'Choose the right tool for the task' }}</h2><p>{{ active_group.summary if active_group else 'Search or filter the complete public catalog. Every card links directly to a working tool.' }}</p></div></div>
+      <div class="directory-grid">
+        {% for item in directory_items %}
+        <article class="directory-item" data-directory-item data-group="{{ item.group }}" data-search-text="{{ item.search_text|e }}">
+          <div class="directory-item-head"><span class="icon-tile">{{ icon(item.icon, 22) }}</span><div class="directory-meta"><span>{{ item.category }}</span><span>{{ item.family }}</span></div></div>
+          <div><span class="eyebrow">{{ item.category }}</span><h3><a href="{{ item.url }}">{{ item.short_name }}</a></h3><p>{{ item.summary }}</p></div>
+          <a class="card-link" href="{{ item.url }}" data-recent-tool="{{ item.slug }}">Open tool <span aria-hidden="true">→</span></a>
+        </article>
+        {% endfor %}
+      </div>
+      <p class="directory-empty" data-directory-empty hidden>No matching tools. Try a shorter or broader search.</p>
+    </div>
+  </section>
+
+  <section class="section section-surface">
+    <div class="container"><div class="directory-note-grid">
+      <article><span class="icon-tile">{{ icon('shield',22) }}</span><h2>Private by default</h2><p>Calculator values, supported files, and document drafts stay in the browser unless a feature clearly says otherwise.</p></article>
+      <article><span class="icon-tile">{{ icon('check',22) }}</span><h2>Halal-friendly catalog</h2><p>The public directory excludes interest, usury, mortgage-interest, debt-interest, and compound-return calculators.</p></article>
+      <article><span class="icon-tile">{{ icon('info',22) }}</span><h2>Verify important outputs</h2><p>Review taxes, payroll, legal terms, signatures, file changes, and business decisions before relying on generated results.</p></article>
+    </div></div>
+  </section>
+
+  {% if active_group %}
+  <section class="section"><div class="container"><div class="section-heading"><span class="eyebrow">Other categories</span><h2>Continue with another workflow</h2></div><div class="directory-groups">{% for group in directory_groups if group.slug != active_group.slug %}<a class="directory-group-card" href="{{ group.url }}"><span class="icon-tile">{{ icon(group.icon,22) }}</span><div><h3>{{ group.name }}</h3><p>{{ group.summary }}</p></div><footer><span>{{ group.count }} tools</span><span aria-hidden="true">→</span></footer></a>{% endfor %}</div></div></section>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}<script type="module" src="{{ url_for('static', filename='js/tool-directory.js') }}"></script>{% endblock %}
