@@ -4,21 +4,26 @@ import html
 
 import pytest
 
+from app.growth_tools import GROWTH_TOOLS
+from app.halal_catalog import DOCUMENT_TYPES, TOOLS
+from app.pdf_convert import PDF_CONVERT_TOOLS
+from app.pdf_lab import PDF_LAB_TOOLS
+from app.pdf_markup import PDF_MARKUP_TOOLS
+from app.pdf_tools import PDF_TOOLS
 from app.tool_directory import (
     DIRECTORY_GROUPS,
     DIRECTORY_ITEMS,
     DIRECTORY_ITEMS_BY_GROUP,
     DIRECTORY_ITEMS_BY_SLUG,
 )
+from app.utility_tools import UTILITY_TOOLS
 
 
 def test_directory_catalog_is_unique_complete_and_grouped():
     assert len(DIRECTORY_ITEMS) == len(DIRECTORY_ITEMS_BY_SLUG)
     assert set(DIRECTORY_ITEMS_BY_GROUP) == set(DIRECTORY_GROUPS)
     assert all(DIRECTORY_ITEMS_BY_GROUP[group] for group in DIRECTORY_GROUPS)
-    assert sum(len(items) for items in DIRECTORY_ITEMS_BY_GROUP.values()) == len(
-        DIRECTORY_ITEMS
-    )
+    assert sum(len(items) for items in DIRECTORY_ITEMS_BY_GROUP.values()) == len(DIRECTORY_ITEMS)
 
     for item in DIRECTORY_ITEMS:
         assert item["group"] in DIRECTORY_GROUPS
@@ -27,20 +32,18 @@ def test_directory_catalog_is_unique_complete_and_grouped():
         assert item["slug"] in DIRECTORY_ITEMS_BY_SLUG
 
 
-def test_directory_catalog_excludes_interest_and_borrowing_tools():
-    searchable = " ".join(
-        f"{item['slug']} {item['name']} {item['short_name']}" for item in DIRECTORY_ITEMS
-    ).lower()
-    prohibited = (
-        "loan-payment",
-        "mortgage",
-        "debt-payoff",
-        "compound-growth",
-        "npv-irr",
-        "savings-goal",
-        "interest-calculator",
-    )
-    assert all(term not in searchable for term in prohibited)
+def test_directory_uses_only_approved_public_registries():
+    approved_slugs = {tool["slug"] for tool in TOOLS}
+    approved_slugs.update(tool["slug"] for tool in GROWTH_TOOLS)
+    approved_slugs.update(tool["slug"] for tool in UTILITY_TOOLS)
+    approved_slugs.update(tool["slug"] for tool in PDF_TOOLS)
+    approved_slugs.update(tool["slug"] for tool in PDF_LAB_TOOLS)
+    approved_slugs.update(tool["slug"] for tool in PDF_CONVERT_TOOLS)
+    approved_slugs.update(tool["slug"] for tool in PDF_MARKUP_TOOLS)
+    approved_slugs.update(f"{kind}-generator" for kind in DOCUMENT_TYPES)
+    approved_slugs.add("word-unscrambler")
+
+    assert set(DIRECTORY_ITEMS_BY_SLUG) == approved_slugs
 
 
 def test_complete_directory_renders_every_public_item(client):
@@ -63,9 +66,7 @@ def test_each_category_landing_page_renders(client, group_slug):
     assert response.status_code == 200
     group = DIRECTORY_GROUPS[group_slug]
     assert html.escape(group["title"]).encode() in response.data
-    assert response.data.count(b"data-directory-item") == len(
-        DIRECTORY_ITEMS_BY_GROUP[group_slug]
-    )
+    assert response.data.count(b"data-directory-item") == len(DIRECTORY_ITEMS_BY_GROUP[group_slug])
     assert b"CollectionPage" in response.data
     assert b"BreadcrumbList" in response.data
 
