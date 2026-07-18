@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% from 'macros.html' import icon %}
+
+{% block styles %}<link rel="stylesheet" href="{{ url_for('static', filename='css/guides.css') }}">{% endblock %}
+
+{% block structured_data %}
+<script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": guide.title,
+  "description": guide.summary,
+  "datePublished": guide.published,
+  "dateModified": guide.updated,
+  "mainEntityOfPage": {"@type": "WebPage", "@id": site_url + request.path},
+  "author": {"@type": "Organization", "name": site_name, "url": site_url + url_for('main.about')},
+  "publisher": {"@id": site_url + "#organization"},
+  "isAccessibleForFree": true,
+  "articleSection": guide.category,
+  "isPartOf": {"@id": site_url + "#website"}
+}|tojson }}</script>
+<script type="application/ld+json" nonce="{{ g.csp_nonce }}">{{ {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {"@type": "ListItem", "position": 1, "name": "Home", "item": site_url + url_for('main.home')},
+    {"@type": "ListItem", "position": 2, "name": "Guides", "item": site_url + url_for('guides.index')},
+    {"@type": "ListItem", "position": 3, "name": guide.short_title, "item": site_url + request.path}
+  ]
+}|tojson }}</script>
+{% endblock %}
+
+{% block content %}
+<article>
+  <header class="guide-hero">
+    <div class="container">
+      <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{{ url_for('main.home') }}">Home</a><span aria-hidden="true">/</span><a href="{{ url_for('guides.index') }}">Guides</a><span aria-hidden="true">/</span><span aria-current="page">{{ guide.short_title }}</span></nav>
+      <div class="guide-hero-grid">
+        <div>
+          <span class="pill">{{ guide.category }}</span>
+          <h1>{{ guide.title }}</h1>
+          <p>{{ guide.summary }}</p>
+          <div class="guide-meta"><span>{{ guide.reading_time }}</span><span>Published {{ guide.published }}</span><span>Reviewed {{ guide.updated }}</span><span>By {{ site_name }}</span></div>
+        </div>
+        <aside class="guide-tool-card">
+          <span class="icon-tile">{{ icon('bolt', 22) }}</span>
+          <div><span class="eyebrow">Use the free tool</span><h2>{{ guide.primary_tool.label }}</h2></div>
+          <p>{{ guide.primary_tool.description }}</p>
+          <a class="button button-primary button-full" href="{{ guide.primary_tool.url }}">{{ guide.primary_tool.label }}</a>
+        </aside>
+      </div>
+    </div>
+  </header>
+
+  <section class="section section-tight">
+    <div class="container guide-layout">
+      <div class="guide-article">
+        <section aria-labelledby="guide-takeaways-title">
+          <div class="section-heading"><span class="eyebrow">Key takeaways</span><h2 id="guide-takeaways-title">What you should know before starting</h2></div>
+          <ul class="guide-summary">{% for takeaway in guide.takeaways %}<li>{{ takeaway }}</li>{% endfor %}</ul>
+        </section>
+
+        {% for section in guide.sections %}
+        <section class="guide-section" id="section-{{ loop.index }}" aria-labelledby="section-{{ loop.index }}-title">
+          <h2 id="section-{{ loop.index }}-title">{{ section.heading }}</h2>
+          {% for paragraph in section.get('paragraphs', []) %}<p>{{ paragraph }}</p>{% endfor %}
+          {% if section.get('bullets') %}<ul>{% for item in section.bullets %}<li>{{ item }}</li>{% endfor %}</ul>{% endif %}
+          {% if section.get('steps') %}<ol>{% for item in section.steps %}<li>{{ item }}</li>{% endfor %}</ol>{% endif %}
+          {% if section.get('example') %}<div class="guide-example"><strong>{{ section.example.title }}</strong><span>{{ section.example.body }}</span></div>{% endif %}
+          {% if section.get('note') %}<div class="guide-note"><strong>Important note</strong><span>{{ section.note }}</span></div>{% endif %}
+        </section>
+        {% endfor %}
+
+        <section class="guide-section" id="final-checklist" aria-labelledby="final-checklist-title">
+          <div class="section-heading"><span class="eyebrow">Final review</span><h2 id="final-checklist-title">Checklist before you finish</h2></div>
+          <ul class="guide-checklist">{% for item in guide.checklist %}<li>{{ item }}</li>{% endfor %}</ul>
+        </section>
+
+        <section class="guide-section" id="related-tools" aria-labelledby="related-tools-title">
+          <h2 id="related-tools-title">Related tools</h2>
+          <p>Continue the workflow with another free Ozzyl Tools utility.</p>
+          <div class="guide-related-tools">{% for tool in guide.related_tools %}<a class="button button-secondary" href="{{ tool.url }}">{{ tool.label }}</a>{% endfor %}</div>
+        </section>
+
+        {% if guide.sources %}
+        <section class="guide-section" id="sources" aria-labelledby="guide-sources-title">
+          <h2 id="guide-sources-title">Reference sources</h2>
+          <p>External references used to review technical statements in this guide.</p>
+          <ul class="guide-sources">{% for source in guide.sources %}<li><a href="{{ source.url }}" rel="noopener noreferrer">{{ source.label }}</a></li>{% endfor %}</ul>
+        </section>
+        {% endif %}
+      </div>
+
+      <aside class="guide-toc" aria-label="On this page">
+        <h2>On this page</h2>
+        <ol>
+          <li><a href="#guide-takeaways-title">Key takeaways</a></li>
+          {% for section in guide.sections %}<li><a href="#section-{{ loop.index }}">{{ section.heading }}</a></li>{% endfor %}
+          <li><a href="#final-checklist">Final checklist</a></li>
+          <li><a href="#related-tools">Related tools</a></li>
+          {% if guide.sources %}<li><a href="#sources">Sources</a></li>{% endif %}
+        </ol>
+      </aside>
+    </div>
+  </section>
+</article>
+
+<section class="section section-surface">
+  <div class="container"><div class="section-heading"><span class="eyebrow">Keep learning</span><h2>Related practical guides</h2></div><div class="guide-index-grid">{% for related in related_guides %}<article class="guide-card"><div class="guide-meta"><span>{{ related.category }}</span><span>{{ related.reading_time }}</span></div><h3><a href="{{ related.url }}">{{ related.short_title }}</a></h3><p>{{ related.summary }}</p><a class="card-link" href="{{ related.url }}">Read guide <span aria-hidden="true">→</span></a></article>{% endfor %}</div></div>
+</section>
+{% endblock %}
