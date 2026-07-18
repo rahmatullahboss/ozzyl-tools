@@ -51,11 +51,7 @@ def add_directory_discovery(response):
         from .routes import CONTENT_UPDATED
 
         entries = "".join(
-            "<url><loc>"
-            + escape(url)
-            + "</loc><lastmod>"
-            + CONTENT_UPDATED
-            + "</lastmod></url>"
+            "<url><loc>" + escape(url) + "</loc><lastmod>" + CONTENT_UPDATED + "</lastmod></url>"
             for url in _directory_discovery_urls(external=True)
         )
         body = response.get_data(as_text=True)
@@ -80,9 +76,7 @@ def add_directory_discovery(response):
                 for slug, group in DIRECTORY_GROUPS.items()
             )
             insertion = "\n".join(lines) + "\n"
-            response.set_data(
-                body.replace("\n## Usage notes", insertion + "\n## Usage notes")
-            )
+            response.set_data(body.replace("\n## Usage notes", insertion + "\n## Usage notes"))
 
     return response
 
@@ -111,9 +105,7 @@ def category(group_slug: str):
     return render_template(
         "tool-directory.html",
         directory_mode="category",
-        directory_items=[
-            _resolved_item(item) for item in DIRECTORY_ITEMS_BY_GROUP[group_slug]
-        ],
+        directory_items=[_resolved_item(item) for item in DIRECTORY_ITEMS_BY_GROUP[group_slug]],
         directory_groups=_resolved_groups(),
         active_group={
             **group,
