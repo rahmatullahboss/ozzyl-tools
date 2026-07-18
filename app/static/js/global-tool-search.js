@@ -93,8 +93,20 @@ function initGlobalToolSearch() {
       hide();
     }
   });
+  document.addEventListener("keydown", (event) => {
+    if (
+      event.key === "/" &&
+      !/INPUT|TEXTAREA|SELECT/u.test(document.activeElement?.tagName || "")
+    ) {
+      event.preventDefault();
+      search.focus();
+    }
+  });
   document.addEventListener("click", (event) => {
-    if (!event.target.closest("[data-tool-search]") && !event.target.closest("[data-search-results]")) {
+    if (
+      !event.target.closest("[data-tool-search]") &&
+      !event.target.closest("[data-search-results]")
+    ) {
       hide();
     }
   });
